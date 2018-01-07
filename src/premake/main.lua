@@ -18,7 +18,7 @@ project ('QDiscordCore')
 	premake.extensions.qt.enable()
 	location ('../projects/')
 	kind ('StaticLib')
-	qtgenerateddir ('core/GeneratedFiles/')
+	qtgenerateddir ('../core/GeneratedFiles/')
 	qtprefix ('Qt5')
 	files {
 		'../core/**.h',
@@ -48,7 +48,7 @@ project ('Demo')
 	dependson ('QDiscordCore')
 	location ('../projects/')
 	kind ('ConsoleApp')
-	qtgenerateddir ('demo/GeneratedFiles/')
+	qtgenerateddir ('../demo/GeneratedFiles/')
 	qtprefix ('Qt5')
 	files {
 		'../demo/**.h',
