@@ -27,9 +27,6 @@ project ('QDiscordCore')
 	includedirs {
 		'../core/',
 	}
-	qtmodules {
-		'core',
-	}
 
 	filter {'platforms:x86'}
 		objdir ('../../bin/x86/obj/')
