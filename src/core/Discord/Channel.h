@@ -3,6 +3,7 @@
 #include "Discord/User.h"
 
 #include <QtCore/QList>
+#include <QtCore/QString>
 
 QDISCORD_NAMESPACE_BEGIN
 
