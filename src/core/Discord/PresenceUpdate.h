@@ -1,5 +1,5 @@
 #pragma once
-#include "Discord/Game.h"
+#include "Discord/Activity.h"
 #include "Discord/User.h"
 
 #include <QtCore/QList>
@@ -13,7 +13,7 @@ struct PresenceUpdate
 
 	QString status;
 
-	Game game;
+	Activity game;
 	User user;
 
 	snowflake_t guild_id;

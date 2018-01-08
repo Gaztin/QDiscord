@@ -1,7 +1,7 @@
 #pragma once
+#include "Discord/Activity.h"
 #include "Discord/Channel.h"
 #include "Discord/Emoji.h"
-#include "Discord/Game.h"
 #include "Discord/Guild.h"
 #include "Discord/GuildMember.h"
 #include "Discord/Overwrite.h"
@@ -16,9 +16,9 @@ QDISCORD_NAMESPACE_BEGIN
 
 namespace Serializer
 {
+	extern Activity activity(const QJsonObject& data);
 	extern Channel channel(const QJsonObject& data);
 	extern Emoji emoji(const QJsonObject& data);
-	extern Game game(const QJsonObject& data);
 	extern Guild guild(const QJsonObject& data);
 	extern GuildMember guildMember(const QJsonObject& data);
 	extern Overwrite overwrite(const QJsonObject& data);

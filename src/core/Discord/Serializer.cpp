@@ -7,6 +7,37 @@ QDISCORD_NAMESPACE_BEGIN
 
 namespace Serializer
 {
+	Activity activity(const QJsonObject& data)
+	{
+		Activity a;
+		a.name = data["name"].toString();
+		a.type = static_cast<ActivityType>(data["type"].toInt());
+		a.url = data["url"].toString();
+
+		const QJsonObject& timestamps_data = data["timestamps"].toObject();
+		a.timestamps.start = timestamps_data["start"].toInt();
+		a.timestamps.end = timestamps_data["end"].toInt();
+
+		a.application_id = snowflake(data["application_id"]);
+		a.details = data["details"].toString();
+		a.state = data["state"].toString();
+
+		const QJsonObject& party_data = data["party"].toObject();
+		a.party.id = party_data["id"].toString();
+
+		const QJsonArray& party_size_data = party_data["size"].toArray();
+		a.party.current_size = party_size_data[0].toInt();
+		a.party.max_size = party_size_data[1].toInt();
+
+		const QJsonObject& assets_data = data["assets"].toObject();
+		a.assets.large_image = assets_data["large_image"].toString();
+		a.assets.large_text = assets_data["large_text"].toString();
+		a.assets.small_imgae = assets_data["small_image"].toString();
+		a.assets.small_text = assets_data["small_text"].toString();
+
+		return a;
+	}
+
 	Channel channel(const QJsonObject& data)
 	{
 		Channel c;
@@ -61,16 +92,6 @@ namespace Serializer
 		e.managed = data.value("managed").toBool();
 
 		return e;
-	}
-	
-	Game game(const QJsonObject& data)
-	{
-		Game g;
-		g.name = data.value("name").toString();
-		g.type = static_cast<GameType>(data.value("type").toInt());
-		g.url = data.value("url").toString();
-
-		return g;
 	}
 	
 	Guild guild(const QJsonObject& data)
