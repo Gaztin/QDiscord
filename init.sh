@@ -63,6 +63,8 @@ if [ -n "$qtdir_x86" ]; then
 		$(cp "$qtdir_x86/bin/Qt5Guid.dll" "bin/x86/")
 		$(cp "$qtdir_x86/bin/Qt5Network.dll" "bin/x86/")
 		$(cp "$qtdir_x86/bin/Qt5Networkd.dll" "bin/x86/")
+		$(cp "$qtdir_x86/bin/Qt5WebSockets.dll" "bin/x86/")
+		$(cp "$qtdir_x86/bin/Qt5WebSocketsd.dll" "bin/x86/")
 		$(cp "$qtdir_x86/bin/Qt5Widgets.dll" "bin/x86/")
 		$(cp "$qtdir_x86/bin/Qt5Widgetsd.dll" "bin/x86/")
 	fi
@@ -78,6 +80,8 @@ if [ -n "$qtdir_x64" ]; then
 		$(cp "$qtdir_x64/bin/Qt5Guid.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Network.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Networkd.dll" "bin/x64/")
+		$(cp "$qtdir_x64/bin/Qt5WebSockets.dll" "bin/x64/")
+		$(cp "$qtdir_x64/bin/Qt5WebSocketsd.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Widgets.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Widgetsd.dll" "bin/x64/")
 	fi
