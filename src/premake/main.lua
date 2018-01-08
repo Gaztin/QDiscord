@@ -28,6 +28,11 @@ project ('QDiscordCore')
 		'../core/',
 	}
 
+	filter {'configurations:Release'}
+		defines {
+			'QT_NO_DEBUG',
+		}
+
 	filter {'platforms:x86'}
 		objdir ('../../bin/x86/obj/')
 		qtpath (qtdir_x86)
@@ -68,6 +73,11 @@ project ('Demo')
 
 	filter {'configurations:Debug'}
 		qtsuffix ('d')
+
+	filter {'configurations:Release'}
+		defines {
+			'QT_NO_DEBUG',
+		}
 
 	filter {'platforms:x86'}
 		debugdir ('../../bin/x86/')
