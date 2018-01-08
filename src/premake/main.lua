@@ -69,6 +69,8 @@ project ('Demo')
 	qtmodules {
 		'core',
 		'gui',
+		'network',
+		'websockets',
 		'widgets',
 	}
 
