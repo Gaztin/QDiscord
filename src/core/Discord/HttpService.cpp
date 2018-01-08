@@ -1,5 +1,8 @@
 #include "HttpService.h"
 
+#include "Discord/Channel.h"
+#include "Discord/Payload.h"
+
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/qauthenticator.h>
@@ -15,31 +18,59 @@ HttpService::HttpService(const QString& user_agent, QObject* parent)
 		&HttpService::onReply);
 }
 
-QNetworkReply* HttpService::sendRequest(const QString& token,
-		const QString& endpoint, const QString& method)
+QNetworkReply* HttpService::get(const QString& token, const QString& endpoint)
 {
-	QUrl url("https://discordapp.com/api" + endpoint);
-	QNetworkRequest request(url);
+	QNetworkRequest request("https://discordapp.com/api" + endpoint);
 
-	request.setRawHeader("Authorization", token.toLocal8Bit());
-	request.setRawHeader("User-Agent", user_agent_.toLocal8Bit());
+	request.setRawHeader("Authorization", ("Bot " + token).toUtf8());
+	request.setRawHeader("User-Agent", user_agent_.toUtf8());
 
-	return network_access_manager_.sendCustomRequest(request,
-		method.toLocal8Bit());
+	return network_access_manager_.get(request);
+}
+
+QNetworkReply* HttpService::post(const QString& token, const QString& endpoint,
+		const QJsonObject& payload)
+{
+	QNetworkRequest request("https://discordapp.com/api" + endpoint);
+	QByteArray data = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+
+	request.setRawHeader("Authorization", ("Bot " + token).toUtf8());
+	request.setRawHeader("User-Agent", user_agent_.toUtf8());
+	request.setRawHeader("Content-Type", "application/json");
+
+	return network_access_manager_.post(request, data);
 }
 
 QNetworkReply* HttpService::getGateway(const QString& token)
 {
-	return sendRequest(token, "/gateway", "GET");
+	return get(token, "/gateway");
 }
 
 QNetworkReply* HttpService::getGatewayBot(const QString& token)
 {
-	return sendRequest(token, "/gateway/bot", "GET");
+	return get(token, "/gateway/bot");
+}
+
+QNetworkReply* HttpService::postMessage(const QString& token,
+		snowflake_t channel_id, const QString& content)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QJsonObject payload;
+
+	payload["content"] = content;
+
+	return post(token, endpoint, payload);
 }
 
 void HttpService::onReply(QNetworkReply* reply)
 {
+#ifdef QT_DEBUG
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		qDebug("%s", qPrintable(reply->errorString()));
+	}
+#endif
+
 	reply->deleteLater();
 }
 
