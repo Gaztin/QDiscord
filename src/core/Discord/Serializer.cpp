@@ -400,7 +400,16 @@ namespace Serializer
 
 		return vs;
 	}
-	
+
+	snowflake_t snowflake(const QJsonValue& value)
+	{
+		return value.toString().toULongLong();
+	}
+
+	QDateTime timestamp(const QJsonValue& value)
+	{
+		return QDateTime::fromString(value.toString(), Qt::ISODate);
+	}
 }
 
 QDISCORD_NAMESPACE_END
