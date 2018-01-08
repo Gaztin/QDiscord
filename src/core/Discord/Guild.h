@@ -7,6 +7,8 @@
 #include "Discord/VoiceState.h"
 
 #include <QtCore/QDateTime>
+#include <QtCore/QList>
+#include <QtCore/QString>
 
 QDISCORD_NAMESPACE_BEGIN
 
