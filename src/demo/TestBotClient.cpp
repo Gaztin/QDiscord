@@ -18,6 +18,11 @@ void TestBotClient::onReady(const Discord::User& user,
 
 void TestBotClient::onMessageCreate(const Discord::Message& message)
 {
+	if (message.content == "!test")
+	{
+		sendMessage(message.channel_id, "This is a test message");
+	}
+
 #ifdef QT_DEBUG
 	qDebug("onMessageCreate (%s)", qPrintable(message.content));
 #endif
