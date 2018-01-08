@@ -41,6 +41,11 @@ void Client::connectBot(const QString& token)
 		&Client::onHttpGetGatewayBotReply);
 }
 
+void Client::sendMessage(snowflake_t channel_id, const QString& content)
+{
+	http_service_.postMessage(token_, channel_id, content);
+}
+
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 {
 	switch (Events::idFromName(name))

@@ -29,6 +29,8 @@ public:
 	void connectUser(const QString& token);
 	void connectBot(const QString& token);
 
+	void sendMessage(snowflake_t channel_id, const QString& content);
+
 protected:
 	virtual void onReady(const User& user,
 		const QList<Channel>& private_channels, const QList<Guild>& guilds) {}
