@@ -38,6 +38,20 @@ namespace Serializer
 		return a;
 	}
 
+	Attachment attachment(const QJsonObject& data)
+	{
+		Attachment a;
+		a.id = snowflake(data["id"]);
+		a.filename = data["filename"].toString();
+		a.size = data["size"].toInt();
+		a.url = data["url"].toString();
+		a.proxy_url = data["proxy_url"].toString();
+		a.height = data["height"].toInt();
+		a.width = data["width"].toInt();
+
+		return a;
+	}
+
 	Channel channel(const QJsonObject& data)
 	{
 		Channel c;
@@ -74,6 +88,63 @@ namespace Serializer
 			"application_id").toString().toULongLong();
 
 		return c;
+	}
+
+	Embed embed(const QJsonObject& data)
+	{
+		Embed e;
+		e.title = data["title"].toString();
+		e.type = data["type"].toString();
+		e.description = data["description"].toString();
+		e.url = data["url"].toString();
+		e.timestamp = timestamp(data["timestamp"]);
+		e.color = data["color"].toInt();
+
+		const QJsonObject& footer_data = data["footer"].toObject();
+		e.footer.text = footer_data["text"].toString();
+		e.footer.icon_url = footer_data["icon_url"].toString();
+		e.footer.proxy_icon_url = footer_data["proxy_icon_url"].toString();
+
+		const QJsonObject& image_data = data["image"].toObject();
+		e.image.url = image_data["url"].toString();
+		e.image.proxy_url = image_data["proxy_url"].toString();
+		e.image.height = image_data["height"].toInt();
+		e.image.width = image_data["width"].toInt();
+
+		const QJsonObject& thumbnail_data = data["thumbnail"].toObject();
+		e.thumbnail.url = thumbnail_data["url"].toString();
+		e.thumbnail.proxy_url = thumbnail_data["proxy_url"].toString();
+		e.thumbnail.height = thumbnail_data["height"].toInt();
+		e.thumbnail.width = thumbnail_data["width"].toInt();
+
+		const QJsonObject& video_data = data["video"].toObject();
+		e.video.url = video_data["url"].toString();
+		e.video.height = video_data["height"].toInt();
+		e.video.width = video_data["width"].toInt();
+
+		const QJsonObject& provider_data = data["provider"].toObject();
+		e.provider.name = provider_data["name"].toString();
+		e.provider.url = provider_data["url"].toString();
+
+		const QJsonObject& author_data = data["author"].toObject();
+		e.author.name = author_data["name"].toString();
+		e.author.url = author_data["url"].toString();
+		e.author.icon_url = author_data["icon_url"].toString();
+		e.author.proxy_icon_url = author_data["proxy_icon_url"].toString();
+
+		const QJsonArray& fields_data = data["fields"].toArray();
+		e.fields.reserve(fields_data.size());
+		for (const QJsonValue& field_value : fields_data)
+		{
+			const QJsonObject& field_data = field_value.toObject();
+			EmbedField field;
+			field.name = field_data["name"].toString();
+			field.value = field_data["value"].toString();
+			field.display_inline = field_data["inline"].toBool();
+			e.fields.append(field);
+		}
+
+		return e;
 	}
 	
 	Emoji emoji(const QJsonObject& data)
@@ -195,6 +266,61 @@ namespace Serializer
 
 		return gm;
 	}
+
+	Message message(const QJsonObject& data)
+	{
+		Message m;
+		m.id = snowflake(data["id"]);
+		m.channel_id = snowflake(data["channel_id"]);
+		m.author = user(data["author"].toObject());
+		m.content = data["content"].toString();
+		m.timestamp = timestamp(data["timestamp"]);
+		m.edited_timestamp = timestamp(data["edited_timestamp"]);
+		m.tts = data["tts"].toBool();
+		m.mention_everyone = data["mention_everyone"].toBool();
+		
+		const QJsonArray& mentions_data = data["mentions"].toArray();
+		m.mentions.reserve(mentions_data.size());
+		for (const QJsonValue& mention_value : mentions_data)
+		{
+			m.mentions.append(user(mention_value.toObject()));
+		}
+
+		const QJsonArray& mention_roles_data = data["mention_roles"].toArray();
+		m.mention_roles.reserve(mention_roles_data.size());
+		for (const QJsonValue& mention_role_value : mention_roles_data)
+		{
+			m.mention_roles.append(role(mention_role_value.toObject()));
+		}
+
+		const QJsonArray& attachments_data = data["attachments"].toArray();
+		m.attachments.reserve(attachments_data.size());
+		for (const QJsonValue& attachment_value : attachments_data)
+		{
+			m.attachments.append(attachment(attachment_value.toObject()));
+		}
+
+		const QJsonArray& embeds_data = data["embeds"].toArray();
+		m.embeds.reserve(embeds_data.size());
+		for (const QJsonValue& embed_value : embeds_data)
+		{
+			m.embeds.append(embed(embed_value.toObject()));
+		}
+
+		const QJsonArray& reaction_data = data["reactions"].toArray();
+		m.reactions.reserve(reaction_data.size());
+		for (const QJsonValue& reaction_value : reaction_data)
+		{
+			m.reactions.append(reaction(reaction_value.toObject()));
+		}
+
+		m.nonce = snowflake(data["nonce"]);
+		m.pinned = data["pinned"].toBool();
+		m.webhook_id = data["webhook_id"].toString();
+		m.type = static_cast<MessageType>(data["type"].toInt());
+
+		return m;
+	}
 	
 	Overwrite overwrite(const QJsonObject& data)
 	{
@@ -206,23 +332,27 @@ namespace Serializer
 
 		return o;
 	}
-	
+
 	PresenceUpdate presenceUpdate(const QJsonObject& data)
 	{
-		PresenceUpdate p;
-		p.user = user(data.value("user").toObject());
+		PresenceUpdate pu;
+		pu.user = user(data["user"].toObject());
+		pu.roles = array<snowflake_t>(data["roles"].toArray());
+		pu.game = activity(data["game"].toObject());
+		pu.guild_id = snowflake(data["guild_id"]);
+		pu.status = data["status"].toString();
 
-		QJsonArray roles_array = data.value("roles").toArray();
-		for (QJsonValue roles_value : roles_array)
-		{
-			p.roles.append(roles_value.toString().toULongLong());
-		}
+		return pu;
+	}
+	
+	Reaction reaction(const QJsonObject& data)
+	{
+		Reaction r;
+		r.count = data["count"].toInt();
+		r.me = data["me"].toBool();
+		r.emoji = emoji(data["emoji"].toObject());
 
-		p.game = game(data.value("game").toObject());
-		p.guild_id = data.value("guild_id").toString().toULongLong();
-		p.status = data.value("status").toString();
-
-		return p;
+		return r;
 	}
 	
 	Role role(const QJsonObject& data)
