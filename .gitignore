@@ -9,3 +9,8 @@ tmp/
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+# Qt
+moc_*
+uic_*
+qrc_*
