@@ -29,6 +29,7 @@ project ('QDiscordCore')
 	}
 
 	filter {'configurations:Release'}
+		optimize ('Full')
 		defines {
 			'QT_NO_DEBUG',
 		}
@@ -75,6 +76,7 @@ project ('Demo')
 		qtsuffix ('d')
 
 	filter {'configurations:Release'}
+		optimize ('Full')
 		defines {
 			'QT_NO_DEBUG',
 		}
