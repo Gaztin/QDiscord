@@ -1,6 +1,7 @@
 #pragma once
 #include "Discord/GatewaySocket.h"
 #include "Discord/HttpService.h"
+#include "Discord/Token.h"
 #include "Discord/User.h"
 
 #include <QtCore/QObject>
@@ -26,8 +27,8 @@ class Client : public QObject
 public:
 	Client(const QString& user_agent, QObject* parent = nullptr);
 
-	void connectUser(const QString& token);
-	void connectBot(const QString& token);
+	void login(const Token& token);
+	void logout();
 
 	void sendMessage(snowflake_t channel_id, const QString& content);
 
@@ -90,7 +91,7 @@ private slots:
 	void onHttpGetGatewayBotReply();
 
 private:
-	QString token_;
+	Token token_;
 	QString session_id_;
 
 	GatewaySocket gateway_socket_;

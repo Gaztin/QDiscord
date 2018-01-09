@@ -28,7 +28,7 @@ GatewaySocket::GatewaySocket(QObject* parent)
 		&GatewaySocket::onTextMessageReceived);
 }
 
-void GatewaySocket::connectToGateway(const QUrl& gateway, const QString& token)
+void GatewaySocket::connectToGateway(const QUrl& gateway, const Token& token)
 {
 	last_gateway_ = gateway;
 	token_ = token;
@@ -73,7 +73,7 @@ void GatewaySocket::identify()
 	shard_data.append(1);
 
 	QJsonObject event_data;
-	event_data["token"] = token_;
+	event_data["token"] = token_.tokenBase();
 	event_data["properties"] = properties;
 	event_data["compress"] = false;
 	event_data["large_threshold"] = 250;

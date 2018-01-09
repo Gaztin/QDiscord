@@ -21,7 +21,7 @@ Client::Client(const QString& user_agent, QObject* parent)
 		&Client::onGatewayEvent);
 }
 
-void Client::connectUser(const QString& token)
+void Client::login(const Token& token)
 {
 	token_ = token;
 
@@ -31,14 +31,9 @@ void Client::connectUser(const QString& token)
 		&Client::onHttpGetGatewayReply);
 }
 
-void Client::connectBot(const QString& token)
+void Client::logout()
 {
-	token_ = token;
-
-	QNetworkReply* get_gateway_bot_reply = http_service_.getGatewayBot(token);
-
-	connect(get_gateway_bot_reply, &QNetworkReply::finished, this,
-		&Client::onHttpGetGatewayBotReply);
+	gateway_socket_.disconnectFromGateway();
 }
 
 void Client::sendMessage(snowflake_t channel_id, const QString& content)

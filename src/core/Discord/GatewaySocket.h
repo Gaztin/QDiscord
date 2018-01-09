@@ -1,5 +1,5 @@
 #pragma once
-#include "Discord.h"
+#include "Discord/Token.h"
 
 #include <QtCore/QTimer>
 #include <QtWebSockets/QWebSocket>
@@ -15,7 +15,7 @@ class GatewaySocket : public QWebSocket
 public:
 	GatewaySocket(QObject* parent = nullptr);
 
-	void connectToGateway(const QUrl& gateway, const QString& token);
+	void connectToGateway(const QUrl& gateway, const Token& token);
 	void disconnectFromGateway(QWebSocketProtocol::CloseCode close_code =
 		QWebSocketProtocol::CloseCodeNormal);
 
@@ -41,7 +41,7 @@ private:
 
 	QTimer heartbeat_timer_;
 	QUrl last_gateway_;
-	QString token_;
+	Token token_;
 
 	int last_sequence_number_;
 
