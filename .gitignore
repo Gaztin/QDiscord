@@ -12,5 +12,5 @@ tmp/
 
 # Qt
 moc_*
-uic_*
+ui_*
 qrc_*
