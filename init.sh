@@ -40,7 +40,6 @@ if [ true ]; then
 	echo -n "Enter your local Qt (x86) directory and press ENTER: "
 	read -e qtdir_x86
 	echo -n $qtdir_x86 >"tmp/.qtdir_x86"
-	echo "Qt (x86) directory: $qtdir_x86"
 fi
 
 # Qt (x64) directory
@@ -49,7 +48,6 @@ if [ "$machine_type" == "x64" ]; then
 	echo -n "Enter your local Qt (x64) directory and press ENTER: "
 	read -e qtdir_x64
 	echo -n $qtdir_x64 >"tmp/.qtdir_x64"
-	echo "Qt (x64) directory: $qtdir_x64"
 fi
 
 
