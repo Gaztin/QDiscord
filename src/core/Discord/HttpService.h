@@ -12,22 +12,11 @@ struct Channel;
 class HttpService : public QObject
 {
 public:
-	enum class ContentType
-	{
-		JSON,
-		X_WWW_FORM_URLENCODED,
-	};
-
 	HttpService(const QString& user_agent, QObject* parent = nullptr);
 
 	QNetworkReply* get(const Token& token, const QString& endpoint);
 	QNetworkReply* post(const Token& token, const QString& endpoint,
-		ContentType content_type, const QJsonObject& payload = QJsonObject());
-
-	QNetworkReply* getGateway(const Token& token);
-
-	QNetworkReply* postMessage(const Token& token, snowflake_t channel_id,
-		const QString& content);
+		const QJsonObject& payload);
 
 private slots:
 	void onReply(QNetworkReply* reply);

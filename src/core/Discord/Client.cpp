@@ -25,7 +25,19 @@ void Client::login(const Token& token)
 {
 	token_ = token;
 
-	QNetworkReply* get_gateway_reply = http_service_.getGateway(token);
+	QString endpoint;
+	switch (token.type())
+	{
+		case Token::Type::BOT:
+			endpoint = "/gateway/bot";
+		break;
+
+		default:
+			endpoint = "/gateway";
+		break;
+	}
+
+	QNetworkReply* get_gateway_reply = http_service_.get(token, endpoint);
 
 	connect(get_gateway_reply, &QNetworkReply::finished, this,
 		&Client::onHttpGetGatewayReply);
@@ -38,7 +50,12 @@ void Client::logout()
 
 void Client::sendMessage(snowflake_t channel_id, const QString& content)
 {
-	http_service_.postMessage(token_, channel_id, content);
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QJsonObject payload;
+
+	payload["content"] = content;
+
+	http_service_.post(token_, endpoint, payload);
 }
 
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)

@@ -29,56 +29,16 @@ QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
 }
 
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,
-		ContentType content_type, const QJsonObject& payload)
+		const QJsonObject& payload)
 {
 	QNetworkRequest request("https://discordapp.com/api" + endpoint);
 	QByteArray data = QJsonDocument(payload).toJson(QJsonDocument::Compact);
 
 	request.setRawHeader("Authorization", token.authorization());
 	request.setRawHeader("User-Agent", user_agent_.toUtf8());
-
-	switch (content_type)
-	{
-		case ContentType::JSON:
-			request.setRawHeader("Content-Type", "application/json");
-		break;
-
-		case ContentType::X_WWW_FORM_URLENCODED:
-			request.setRawHeader("Content-Type",
-				"application/x-www-form-urlencoded");
-		break;
-	}
+	request.setRawHeader("Content-Type", "application/json");
 
 	return network_access_manager_.post(request, data);
-}
-
-QNetworkReply* HttpService::getGateway(const Token& token)
-{
-	QString endpoint;
-
-	switch (token.type())
-	{
-		case Token::Type::BOT:
-			endpoint = "/gateway/bot";
-		break;
-
-		default:
-			endpoint = "/gateway";
-		break;
-	}
-
-	return get(token, endpoint);
-}
-
-QNetworkReply* HttpService::postMessage(const Token& token,
-		snowflake_t channel_id, const QString& content)
-{
-	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
-	QJsonObject payload;
-
-	payload["content"] = content;
-
-	return post(token, endpoint, ContentType::JSON, payload);
 }
 
 void HttpService::onReply(QNetworkReply* reply)
