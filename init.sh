@@ -40,7 +40,6 @@ if [ true ]; then
 	echo -n "Enter your local Qt (x86) directory and press ENTER: "
 	read -e qtdir_x86
 	echo -n $qtdir_x86 >"tmp/.qtdir_x86"
-	echo "Qt (x86) directory: $qtdir_x86"
 fi
 
 # Qt (x64) directory
@@ -49,11 +48,26 @@ if [ "$machine_type" == "x64" ]; then
 	echo -n "Enter your local Qt (x64) directory and press ENTER: "
 	read -e qtdir_x64
 	echo -n $qtdir_x64 >"tmp/.qtdir_x64"
-	echo "Qt (x64) directory: $qtdir_x64"
+fi
+
+# OpenSSL (x86) directory
+ssldir_x86=""
+if [ true ]; then
+	echo -n "Enter your local OpenSSL (x86) directory and press ENTER: "
+	read -e ssldir_x86
+	echo -n $ssldir_x86 >"tmp/.ssldir_x86"
+fi
+
+# OpenSSL (x64) directory
+ssldir_x64=""
+if [ "$machine_type" == "x64" ]; then
+	echo -n "Enter your local OpenSSL (x64) directory and press ENTER: "
+	read -e ssldir_x64
+	echo -n $ssldir_x64 >"tmp/.ssldir_x64"
 fi
 
 
-# Copy necessary x86 files
+# Copy Qt (x86) DLLs
 if [ -n "$qtdir_x86" ]; then
 	if [ "$os" == "windows" ]; then
 		$(cp "$qtdir_x86/plugins/platforms/qwindows.dll" "bin/x86/")
@@ -70,7 +84,7 @@ if [ -n "$qtdir_x86" ]; then
 	fi
 fi
 
-# Copy necessary x64 files
+# Copy Qt (x64) DLLs
 if [ -n "$qtdir_x64" ]; then
 	if [ "$os" == "windows" ]; then
 		$(cp "$qtdir_x64/plugins/platforms/qwindows.dll" "bin/x64/")
@@ -84,6 +98,22 @@ if [ -n "$qtdir_x64" ]; then
 		$(cp "$qtdir_x64/bin/Qt5WebSocketsd.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Widgets.dll" "bin/x64/")
 		$(cp "$qtdir_x64/bin/Qt5Widgetsd.dll" "bin/x64/")
+	fi
+fi
+
+# Copy OpenSSL (x86) DLLs
+if [ -n "$ssldir_x86" ]; then
+	if [ "$os" == "windows" ]; then
+		$(cp "$ssldir_x86/bin/libeay32.dll" "bin/x86/")
+		$(cp "$ssldir_x86/bin/ssleay32.dll" "bin/x86/")
+	fi
+fi
+
+# Copy OpenSSL (x64) DLLs
+if [ -n "$ssldir_x64" ]; then
+	if [ "$os" == "windows" ]; then
+		$(cp "$ssldir_x64/bin/libeay32.dll" "bin/x64/")
+		$(cp "$ssldir_x64/bin/ssleay32.dll" "bin/x64/")
 	fi
 fi
 
