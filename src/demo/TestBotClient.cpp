@@ -1,6 +1,7 @@
 #include "TestBotClient.h"
 
 #include <Discord/Message.h>
+#include <Discord/Promise.h>
 
 TestBotClient::TestBotClient(QObject* parent)
 	: Discord::Client("test-bot")
@@ -20,7 +21,15 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 {
 	if (message.content == "!test")
 	{
-		sendMessage(message.channel_id, "This is a test message");
+		getChannel(message.channel_id).then([=](
+				const Discord::Channel& channel){
+			sendMessage(channel.id, QString("Channel name is '%1'").arg(
+				channel.name));
+
+		}).otherwise([=](){
+			sendMessage(message.channel_id, QString(
+				"Failed to get channel by ID: %1").arg(message.channel_id));
+		});
 	}
 	else if (message.content.startsWith("!img "))
 	{
@@ -51,6 +60,35 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 		{
 			sendMessage(message.channel_id, new_messages.join('\n'));
 		}
+	}
+	else if (message.content.startsWith("!react "))
+	{
+		QStringList args = message.content.split(' ');
+		if (!args.empty())
+		{
+			QString emoji = args[1];
+			QRegExp rx("<:*:*>");
+			rx.setPatternSyntax(QRegExp::Wildcard);
+			if (rx.exactMatch(emoji))
+			{
+				emoji.remove(0, 2);
+				emoji.remove(emoji.length() - 1, 1);
+				addReaction(message.channel_id, message.id, emoji);
+			}
+		}
+	}
+	else if (message.content.startsWith("!removereactions "))
+	{
+		QStringList args = message.content.split(' ');
+		if (args.size() == 2)
+		{
+			QString message_id = args[1];
+			removeAllReactions(message.channel_id, message_id.toULongLong());
+		}
+	}
+	else if (message.content == "!trigger")
+	{
+		triggerTypingIndicator(message.channel_id);
 	}
 
 #ifdef QT_DEBUG
