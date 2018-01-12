@@ -1,6 +1,10 @@
 #pragma once
+#include "Discord/Channel.h"
 #include "Discord/GatewaySocket.h"
 #include "Discord/HttpService.h"
+#include "Discord/Message.h"
+#include "Discord/Promise.h"
+#include "Discord/Reaction.h"
 #include "Discord/Token.h"
 #include "Discord/User.h"
 
@@ -29,6 +33,14 @@ public:
 
 	void login(const Token& token);
 	void logout();
+
+	Promise<Channel>& getChannel(snowflake_t channel_id);
+	Promise<Message>& getMessage(snowflake_t channel_id,
+		snowflake_t message_id);
+	Promise<QList<Message>>& getMessages(snowflake_t channel_id);
+	Promise<QList<Reaction>>& getReactions(snowflake_t channel_id,
+		snowflake_t message_id, const QString& emoji);
+	Promise<QList<Message>>& getPins(snowflake_t channel_id);
 
 	void sendMessage(snowflake_t channel_id, const QString& content);
 	void addReaction(snowflake_t channel_id, snowflake_t message_id,

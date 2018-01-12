@@ -48,6 +48,105 @@ void Client::logout()
 	gateway_socket_.disconnectFromGateway();
 }
 
+Promise<Channel>& Client::getChannel(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1").arg(channel_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Channel>* promise = new Promise<Channel>(reply);
+	
+	connect(reply, &QNetworkReply::finished, [&]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
+		Channel channel = Serializer::channel(data);
+
+		promise->resolve(channel);
+	});
+
+	return (*promise);
+}
+
+Promise<Message>& Client::getMessage(snowflake_t channel_id,
+		snowflake_t message_id)
+{
+	QString endpoint = QString("/channels/%1/messages/%2").arg(channel_id).arg(
+		message_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Message>* promise = new Promise<Message>(reply);
+
+	connect(reply, &QNetworkReply::finished, [&]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
+		Message message = Serializer::message(data);
+
+		promise->resolve(message);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Message>>& Client::getMessages(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [&]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
+		QList<Message> messages = Serializer::array<Message>(data);
+
+		promise->resolve(messages);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
+		snowflake_t message_id, const QString& emoji)
+{
+	QString endpoint = QString("/channels/%1/messages/%2/reactions/%3").arg(
+		channel_id).arg(message_id).arg(emoji);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Reaction>>* promise = new Promise<QList<Reaction>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [&]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
+		QList<Reaction> reactions = Serializer::array<Reaction>(data);
+
+		promise->resolve(reactions);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/pins").arg(channel_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [&]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
+		QList<Message> pins = Serializer::array<Message>(data);
+
+		promise->resolve(pins);
+	});
+
+	return (*promise);
+}
+
 void Client::sendMessage(snowflake_t channel_id, const QString& content)
 {
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
