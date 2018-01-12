@@ -168,9 +168,6 @@ void GatewaySocket::handleIncomingPayload(const Payload& payload)
 	switch (payload.opcode)
 	{
 		case Opcode::DISPATCH:
-#ifdef QT_DEBUG
-			qDebug("Dispatching event '%s'", qPrintable(payload.event_name));
-#endif
 			last_sequence_number_ = payload.sequence_number;
 			emit event(payload.event_name, payload.event_data.toObject());
 		break;
