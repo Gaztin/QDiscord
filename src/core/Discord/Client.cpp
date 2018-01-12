@@ -58,6 +58,34 @@ void Client::sendMessage(snowflake_t channel_id, const QString& content)
 	http_service_.post(token_, endpoint, payload);
 }
 
+void Client::addReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji)
+{
+	QString endpoint = QString(
+		"/channels/%1/messages/%2/reactions/%3/@me").arg(channel_id).arg(
+			message_id).arg(emoji);
+
+	http_service_.put(token_, endpoint, QJsonObject());
+}
+
+void Client::removeReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji, snowflake_t user_id)
+{
+	QString user_string = (user_id == 0) ? "@me" : QString::number(user_id);
+	QString endpoint = QString("/channels/%1/messages/%2/reactions/%3/%4").arg(
+		channel_id).arg(message_id).arg(emoji).arg(user_string);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::removeAllReactions(snowflake_t channel_id, snowflake_t message_id)
+{
+	QString endpoint = QString("/channels/%1/messages/%2/reactions").arg(
+		channel_id).arg(message_id);
+
+	http_service_.del(token_, endpoint);
+}
+
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 {
 	switch (Events::idFromName(name))

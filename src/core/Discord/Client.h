@@ -31,6 +31,11 @@ public:
 	void logout();
 
 	void sendMessage(snowflake_t channel_id, const QString& content);
+	void addReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji);
+	void removeReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji, snowflake_t user_id = 0);
+	void removeAllReactions(snowflake_t channel_id, snowflake_t message_id);
 
 protected:
 	virtual void onReady(const User& user,
