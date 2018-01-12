@@ -17,6 +17,8 @@ public:
 	QNetworkReply* get(const Token& token, const QString& endpoint);
 	QNetworkReply* post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload);
+	QNetworkReply* put(const Token& token, const QString& endpoint,
+		const QJsonObject& payload);
 
 private slots:
 	void onReply(QNetworkReply* reply);
