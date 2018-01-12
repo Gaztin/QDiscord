@@ -22,6 +22,9 @@ private slots:
 	void onReply(QNetworkReply* reply);
 
 private:
+	QNetworkReply* sendRequest(const QByteArray& verb, const Token& token,
+		const QString& endpoint, const QJsonObject& payload = QJsonObject());
+
 	QString user_agent_;
 	QNetworkAccessManager network_access_manager_;
 };

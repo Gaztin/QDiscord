@@ -20,25 +20,13 @@ HttpService::HttpService(const QString& user_agent, QObject* parent)
 
 QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
 {
-	QNetworkRequest request("https://discordapp.com/api" + endpoint);
-
-	request.setRawHeader("Authorization", token.authorization());
-	request.setRawHeader("User-Agent", user_agent_.toUtf8());
-
-	return network_access_manager_.get(request);
+	return sendRequest("GET", token, endpoint);
 }
 
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	QNetworkRequest request("https://discordapp.com/api" + endpoint);
-	QByteArray data = QJsonDocument(payload).toJson(QJsonDocument::Compact);
-
-	request.setRawHeader("Authorization", token.authorization());
-	request.setRawHeader("User-Agent", user_agent_.toUtf8());
-	request.setRawHeader("Content-Type", "application/json");
-
-	return network_access_manager_.post(request, data);
+	return sendRequest("POST", token, endpoint, payload);
 }
 
 void HttpService::onReply(QNetworkReply* reply)
@@ -51,6 +39,25 @@ void HttpService::onReply(QNetworkReply* reply)
 #endif
 
 	reply->deleteLater();
+}
+
+QNetworkReply* HttpService::sendRequest(const QByteArray& verb,
+		const Token& token, const QString& endpoint,
+		const QJsonObject& payload)
+{
+	QNetworkRequest request("https://discordapp.com/api" + endpoint);
+	QByteArray data;
+
+	request.setRawHeader("Authorization", token.authorization());
+	request.setRawHeader("User-Agent", user_agent_.toUtf8());
+
+	if (!payload.empty())
+	{
+		request.setRawHeader("Content-Type", "application/json");
+		data = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+	}
+
+	return network_access_manager_.sendCustomRequest(request, verb, data);
 }
 
 QDISCORD_NAMESPACE_END
