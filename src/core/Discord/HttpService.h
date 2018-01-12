@@ -15,6 +15,7 @@ public:
 	HttpService(const QString& user_agent, QObject* parent = nullptr);
 
 	QNetworkReply* get(const Token& token, const QString& endpoint);
+	QNetworkReply* del(const Token& token, const QString& endpoint);
 	QNetworkReply* post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload);
 	QNetworkReply* put(const Token& token, const QString& endpoint,

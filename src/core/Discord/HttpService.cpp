@@ -23,6 +23,11 @@ QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
 	return sendRequest("GET", token, endpoint);
 }
 
+QNetworkReply* HttpService::del(const Token& token, const QString& endpoint)
+{
+	return sendRequest("DELETE", token, endpoint);
+}
+
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
