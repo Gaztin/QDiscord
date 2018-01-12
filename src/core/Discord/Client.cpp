@@ -86,6 +86,13 @@ void Client::removeAllReactions(snowflake_t channel_id, snowflake_t message_id)
 	http_service_.del(token_, endpoint);
 }
 
+void Client::triggerTypingIndicator(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/typing").arg(channel_id);
+
+	http_service_.post(token_, endpoint, QJsonObject());
+}
+
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 {
 	switch (Events::idFromName(name))
