@@ -12,6 +12,8 @@ class Overwrite
 public:
 	explicit Overwrite(const QJsonObject& data);
 
+	operator QJsonObject() const;
+
 	const QString& type() const { return type_; }
 	
 	snowflake_t id() const { return id_; }
