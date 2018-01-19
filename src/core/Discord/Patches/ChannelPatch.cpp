@@ -9,14 +9,15 @@ void ChannelPatch::addPermissionOverwrite(
 		const Overwrite& permission_overwrite)
 {
 	QJsonObject::const_iterator permission_overwrite_iterator =
-		data_.find("permission_overwrite");
+		data_.find("permission_overwrites");
 	QJsonArray permission_overwrites_array;
 	if (permission_overwrite_iterator != data_.constEnd())
 	{
 		permission_overwrites_array = permission_overwrite_iterator->toArray();
 	}
 
-	data_["permission_overwrite"] = permission_overwrites_array;
+	permission_overwrites_array.append(QJsonObject(permission_overwrite));
+	data_["permission_overwrites"] = permission_overwrites_array;
 }
 
 void ChannelPatch::setPermissionOverwrites(
@@ -29,7 +30,7 @@ void ChannelPatch::setPermissionOverwrites(
 		permission_overwrites_array.append(permission_overwrite_object);
 	}
 
-	data_["permission_overwrite"] = permission_overwrites_array;
+	data_["permission_overwrites"] = permission_overwrites_array;
 }
 
 void ChannelPatch::setName(const QString& name)
