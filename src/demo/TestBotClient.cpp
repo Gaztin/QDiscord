@@ -1,6 +1,6 @@
 #include "TestBotClient.h"
 
-#include <Discord/Message.h>
+#include <Discord/Objects/Message.h>
 #include <Discord/Promise.h>
 
 TestBotClient::TestBotClient(QObject* parent)
@@ -19,21 +19,21 @@ void TestBotClient::onReady(const Discord::User& user,
 
 void TestBotClient::onMessageCreate(const Discord::Message& message)
 {
-	if (message.content == "!test")
+	if (message.content() == "!test")
 	{
-		getChannel(message.channel_id).then([=](
+		getChannel(message.channelId()).then([=](
 				const Discord::Channel& channel){
-			sendMessage(channel.id, QString("Channel name is '%1'").arg(
-				channel.name));
+			sendMessage(channel.id(), QString("Channel name is '%1'").arg(
+				channel.name()));
 
 		}).otherwise([=](){
-			sendMessage(message.channel_id, QString(
-				"Failed to get channel by ID: %1").arg(message.channel_id));
+			sendMessage(message.channelId(), QString(
+				"Failed to get channel by ID: %1").arg(message.channelId()));
 		});
 	}
-	else if (message.content.startsWith("!img "))
+	else if (message.content().startsWith("!img "))
 	{
-		QStringList args = message.content.split(' ');
+		QStringList args = message.content().split(' ');
 		args.pop_front();
 
 		QStringList new_messages;
@@ -58,12 +58,12 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 
 		if (!new_messages.empty())
 		{
-			sendMessage(message.channel_id, new_messages.join('\n'));
+			sendMessage(message.channelId(), new_messages.join('\n'));
 		}
 	}
-	else if (message.content.startsWith("!react "))
+	else if (message.content().startsWith("!react "))
 	{
-		QStringList args = message.content.split(' ');
+		QStringList args = message.content().split(' ');
 		if (!args.empty())
 		{
 			QString emoji = args[1];
@@ -73,26 +73,26 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 			{
 				emoji.remove(0, 2);
 				emoji.remove(emoji.length() - 1, 1);
-				addReaction(message.channel_id, message.id, emoji);
+				addReaction(message.channelId(), message.id(), emoji);
 			}
 		}
 	}
-	else if (message.content.startsWith("!removereactions "))
+	else if (message.content().startsWith("!removereactions "))
 	{
-		QStringList args = message.content.split(' ');
+		QStringList args = message.content().split(' ');
 		if (args.size() == 2)
 		{
 			QString message_id = args[1];
-			removeAllReactions(message.channel_id, message_id.toULongLong());
+			removeAllReactions(message.channelId(), message_id.toULongLong());
 		}
 	}
-	else if (message.content == "!trigger")
+	else if (message.content() == "!trigger")
 	{
-		triggerTypingIndicator(message.channel_id);
+		triggerTypingIndicator(message.channelId());
 	}
 
 #ifdef QT_DEBUG
-	qDebug("[%s]: %s", qPrintable(message.author.username),
-		qPrintable(message.content));
+	qDebug("[%s]: %s", qPrintable(message.author().username()),
+		qPrintable(message.content()));
 #endif
 }
