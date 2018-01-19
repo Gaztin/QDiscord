@@ -1,6 +1,7 @@
 #include "Client.h"
 
 #include "Discord/Objects/Guild.h"
+#include "Discord/Patches/ChannelPatch.h"
 #include "Discord/GatewayEvents.h"
 
 #include <QtCore/QJsonArray>
@@ -202,6 +203,15 @@ void Client::triggerTypingIndicator(snowflake_t channel_id)
 	QString endpoint = QString("/channels/%1/typing").arg(channel_id);
 
 	http_service_.post(token_, endpoint, QJsonObject());
+}
+
+void Client::modifyChannel(snowflake_t channel_id,
+		const ChannelPatch& channel_patch)
+{
+	QString endpoint = QString("/channels/%1").arg(channel_id);
+	QJsonObject payload(channel_patch);
+
+	http_service_.patch(token_, endpoint, payload);
 }
 
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)

@@ -16,6 +16,7 @@ class QJsonObject;
 
 QDISCORD_NAMESPACE_BEGIN
 
+class ChannelPatch;
 class Channel;
 class Activity;
 class Emoji;
@@ -49,6 +50,9 @@ public:
 		const QString& emoji, snowflake_t user_id = 0);
 	void removeAllReactions(snowflake_t channel_id, snowflake_t message_id);
 	void triggerTypingIndicator(snowflake_t channel_id);
+
+	void modifyChannel(snowflake_t channel_id,
+		const ChannelPatch& channel_patch);
 
 protected:
 	virtual void onReady(const User& user,
