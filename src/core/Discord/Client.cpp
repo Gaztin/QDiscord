@@ -54,7 +54,7 @@ Promise<Channel>& Client::getChannel(snowflake_t channel_id)
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
 	Promise<Channel>* promise = new Promise<Channel>(reply);
 	
-	connect(reply, &QNetworkReply::finished, [&]{
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
@@ -75,7 +75,7 @@ Promise<Message>& Client::getMessage(snowflake_t channel_id,
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
 	Promise<Message>* promise = new Promise<Message>(reply);
 
-	connect(reply, &QNetworkReply::finished, [&]{
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
@@ -94,7 +94,7 @@ Promise<QList<Message>>& Client::getMessages(snowflake_t channel_id)
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
 	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
 
-	connect(reply, &QNetworkReply::finished, [&]{
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
@@ -119,7 +119,7 @@ Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
 	Promise<QList<Reaction>>* promise = new Promise<QList<Reaction>>(reply);
 
-	connect(reply, &QNetworkReply::finished, [&]{
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
@@ -142,7 +142,7 @@ Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
 	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
 
-	connect(reply, &QNetworkReply::finished, [&]{
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
