@@ -1,7 +1,7 @@
 #include "Client.h"
 
+#include "Discord/Objects/Guild.h"
 #include "Discord/GatewayEvents.h"
-#include "Discord/Serializer.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -59,7 +59,7 @@ Promise<Channel>& Client::getChannel(snowflake_t channel_id)
 			return promise->reject();
 
 		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
-		Channel channel = Serializer::channel(data);
+		Channel channel(data);
 
 		promise->resolve(channel);
 	});
@@ -80,7 +80,7 @@ Promise<Message>& Client::getMessage(snowflake_t channel_id,
 			return promise->reject();
 
 		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
-		Message message = Serializer::message(data);
+		Message message(data);
 
 		promise->resolve(message);
 	});
@@ -99,7 +99,11 @@ Promise<QList<Message>>& Client::getMessages(snowflake_t channel_id)
 			return promise->reject();
 
 		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
-		QList<Message> messages = Serializer::array<Message>(data);
+		QList<Message> messages;
+		for (QJsonValue value : data)
+		{
+			messages.append(Message(value.toObject()));
+		}
 
 		promise->resolve(messages);
 	});
@@ -120,7 +124,11 @@ Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
 			return promise->reject();
 
 		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
-		QList<Reaction> reactions = Serializer::array<Reaction>(data);
+		QList<Reaction> reactions;
+		for (QJsonValue value : data)
+		{
+			reactions.append(Reaction(value.toObject()));
+		}
 
 		promise->resolve(reactions);
 	});
@@ -139,7 +147,11 @@ Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
 			return promise->reject();
 
 		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
-		QList<Message> pins = Serializer::array<Message>(data);
+		QList<Message> pins;
+		for (QJsonValue value : data)
+		{
+			pins.append(Message(value.toObject()));
+		}
 
 		promise->resolve(pins);
 	});
@@ -198,11 +210,23 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 	{
 		case EventId::READY:
 		{
-			User user = Serializer::user(data["user"].toObject());
-			QList<Channel> private_channels = Serializer::array<Channel>(
-				data["private_channels"].toArray());
-			QList<Guild> guilds = Serializer::array<Guild>(
-				data["guilds"].toArray());
+			User user(data["user"].toObject());
+			QList<Channel> private_channels;
+			QJsonArray private_channels_array =
+				data["private_channels"].toArray();
+			for (QJsonValue private_channel_value : private_channels_array)
+			{
+				private_channels.append(Channel(
+					private_channel_value.toObject()));
+			}
+
+			QList<Guild> guilds;
+			QJsonArray guilds_array = data["guilds"].toArray();
+			for (QJsonValue guild_value : guilds_array)
+			{
+				guilds.append(Guild(guild_value.toObject()));
+			}
+
 			onReady(user, private_channels, guilds);
 
 			session_id_ = data["session_id"].toString();
@@ -211,51 +235,52 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 
 		case EventId::CHANNEL_CREATE:
 		{
-			Channel new_channel = Serializer::channel(data);
+			Channel new_channel(data);
 			onChannelCreate(new_channel);
 		}
 		break;
 
 		case EventId::CHANNEL_UPDATE:
 		{
-			Channel updated_channel = Serializer::channel(data);
+			Channel updated_channel(data);
 			onChannelUpdate(updated_channel);
 		}
 		break;
 
 		case EventId::CHANNEL_DELETE:
 		{
-			Channel deleted_channel = Serializer::channel(data);
+			Channel deleted_channel(data);
 			onChannelDelete(deleted_channel);
 		}
 		break;
 
 		case EventId::CHANNEL_PINS_UPDATE:
 		{
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
-			QDateTime last_pin_timestamp = Serializer::timestamp(
-				data["joined_at"]);
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
+			QDateTime last_pin_timestamp = QDateTime::fromString(
+				data["joined_at"].toString(), Qt::ISODate);
 			onChannelPinsUpdate(channel_id, last_pin_timestamp);
 		}
 		break;
 
 		case EventId::GUILD_CREATE:
 		{
-			Guild guild = Serializer::guild(data);
+			Guild guild(data);
 			onGuildCreate(guild);
 		}
 		break;
 
 		case EventId::GUILD_UPDATE:
 		{
-			Guild guild = Serializer::guild(data);
+			Guild guild(data);
 			onGuildUpdate(guild);
 		}
 		break;
 
 		case EventId::GUILD_DELETE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["id"]);
+			snowflake_t guild_id = data["id"].toString().toULongLong();
 			bool unavailable = data["unavailable"].toBool();
 			onGuildDelete(guild_id, unavailable);
 		}
@@ -263,163 +288,196 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 
 		case EventId::GUILD_BAN_ADD:
 		{
-			User banned_user = Serializer::user(data);
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			User banned_user(data);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			onGuildBanAdd(banned_user, guild_id);
 		}
 		break;
 
 		case EventId::GUILD_BAN_REMOVE:
 		{
-			User banned_user = Serializer::user(data);
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			User banned_user(data);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			onGuildBanRemove(banned_user, guild_id);
 		}
 		break;
 
 		case EventId::GUILD_EMOJIS_UPDATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			QList<Emoji> emojis = Serializer::array<Emoji>(
-				data["emojis"].toArray());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			QList<Emoji> emojis;
+			QJsonArray emojis_array = data["emojis"].toArray();
+			for (QJsonValue emoji_value : emojis_array)
+			{
+				emojis.append(Emoji(emoji_value.toObject()));
+			}
+
 			onGuildEmojisUpdate(guild_id, emojis);
 		}
 		break;
 
 		case EventId::GUILD_INTEGRATIONS_UPDATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			onGuildIntegrationsUpdate(guild_id);
 		}
 		break;
 
 		case EventId::GUILD_MEMBER_ADD:
 		{
-			GuildMember guild_member = Serializer::guildMember(data);
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			GuildMember guild_member(data);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			onGuildMemberAdd(guild_member, guild_id);
 		}
 		break;
 
 		case EventId::GUILD_MEMBER_REMOVE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			User removed_user = Serializer::user(data["user"].toObject());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			User removed_user(data["user"].toObject());
 			onGuildMemberRemove(guild_id, removed_user);
 		}
 		break;
 
 		case EventId::GUILD_MEMBER_UPDATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			QList<snowflake_t> roles = Serializer::array<snowflake_t>(
-				data["roles"].toArray());
-			User user = Serializer::user(data["user"].toObject());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			User user(data["user"].toObject());
 			QString nick = data["nick"].toString();
+			QList<snowflake_t> roles;
+			QJsonArray roles_array = data["roles"].toArray();
+			for (QJsonValue role_value : roles_array)
+			{
+				roles.append(role_value.toString().toULongLong());
+			}
+
 			onGuildMemberUpdate(guild_id, roles, user, nick);
 		}
 		break;
 
 		case EventId::GUILD_ROLE_CREATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			QList<GuildMember> members = Serializer::array<GuildMember>(
-				data["members"].toArray());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			QList<GuildMember> members;
+			QJsonArray members_array = data["members"].toArray();
+			for (QJsonValue member_value : members_array)
+			{
+				members.append(GuildMember(member_value.toObject()));
+			}
+
 			onGuildRoleCreate(guild_id, members);
 		}
 		break;
 
 		case EventId::GUILD_ROLE_UPDATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			Role role = Serializer::role(data["role"].toObject());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			Role role(data["role"].toObject());
 			onGuildRoleUpdate(guild_id, role);
 		}
 		break;
 
 		case EventId::GUILD_ROLE_DELETE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			snowflake_t role_id = Serializer::snowflake(data["role_id"]);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			snowflake_t role_id = data["role_id"].toString().toULongLong();
 			onGuildRoleDelete(guild_id, role_id);
 		}
 		break;
 
 		case EventId::MESSAGE_CREATE:
 		{
-			Message message = Serializer::message(data);
+			Message message(data);
 			onMessageCreate(message);
 		}
 		break;
 
 		case EventId::MESSAGE_UPDATE:
 		{
-			Message message = Serializer::message(data);
+			Message message(data);
 			onMessageUpdate(message);
 		}
 		break;
 
 		case EventId::MESSAGE_DELETE:
 		{
-			snowflake_t id = Serializer::snowflake(data["id"]);
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
+			snowflake_t id = data["id"].toString().toULongLong();
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
 			onMessageDelete(id, channel_id);
 		}
 		break;
 
 		case EventId::MESSAGE_DELETE_BULK:
 		{
-			QList<snowflake_t> ids = Serializer::array<snowflake_t>(
-				data["ids"].toArray());
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
+			QList<snowflake_t> ids;
+			QJsonArray ids_array = data["ids"].toArray();
+			for (QJsonValue id_value : ids_array)
+			{
+				ids.append(id_value.toString().toULongLong());
+			}
+
 			onMessageDeleteBulk(ids, channel_id);
 		}
 		break;
 
 		case EventId::MESSAGE_REACTION_ADD:
 		{
-			snowflake_t user_id = Serializer::snowflake(data["user_id"]);
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
-			snowflake_t message_id = Serializer::snowflake(data["message_id"]);
-			Emoji emoji = Serializer::emoji(data["emoji"].toObject());
+			snowflake_t user_id = data["user_id"].toString().toULongLong();
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
+			snowflake_t message_id =
+				data["message_id"].toString().toULongLong();
+			Emoji emoji(data["emoji"].toObject());
 			onMessageReactionAdd(user_id, channel_id, message_id, emoji);
 		}
 		break;
 
 		case EventId::MESSAGE_REACTION_REMOVE:
 		{
-			snowflake_t user_id = Serializer::snowflake(data["user_id"]);
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
-			snowflake_t message_id = Serializer::snowflake(data["message_id"]);
-			Emoji emoji = Serializer::emoji(data["emoji"].toObject());
+			snowflake_t user_id = data["user_id"].toString().toULongLong();
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
+			snowflake_t message_id =
+				data["message_id"].toString().toULongLong();
+			Emoji emoji(data["emoji"].toObject());
 			onMessageReactionRemove(user_id, channel_id, message_id, emoji);
 		}
 		break;
 
 		case EventId::MESSAGE_REACTION_REMOVE_ALL:
 		{
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
-			snowflake_t message_id = Serializer::snowflake(data["message_id"]);
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
+			snowflake_t message_id =
+				data["message_id"].toString().toULongLong();
 			onMessageReactionRemoveAll(channel_id, message_id);
 		}
 		break;
 
 		case EventId::PRESENCE_UPDATE:
 		{
-			User user = Serializer::user(data["user"].toObject());
-			QList<snowflake_t> roles = Serializer::array<snowflake_t>(
-				data["roles"].toArray());
-			Activity activity = Serializer::activity(data["game"].toObject());
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			User user(data["user"].toObject());
+			Activity activity(data["game"].toObject());
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			QString status = data["status"].toString();
+			QList<snowflake_t> roles;
+			QJsonArray roles_array = data["roles"].toArray();
+			for (QJsonValue role_value : roles_array)
+			{
+				roles.append(role_value.toString().toULongLong());
+			}
+
 			onPresenceUpdate(user, roles, activity, guild_id, status);
 		}
 		break;
 
 		case EventId::TYPING_START:
 		{
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
-			snowflake_t user_id = Serializer::snowflake(data["user_id"]);
+			snowflake_t channel_id = data["channel_id"].toString().toULongLong();
+			snowflake_t user_id = data["user_id"].toString().toULongLong();
 			int timestamp = data["timestamp"].toInt();
 			onTypingStart(channel_id, user_id, timestamp);
 		}
@@ -427,14 +485,14 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 
 		case EventId::USER_UPDATE:
 		{
-			User user = Serializer::user(data);
+			User user(data);
 			onUserUpdate(user);
 		}
 		break;
 
 		case EventId::VOICE_STATE_UPDATE:
 		{
-			VoiceState voice_state = Serializer::voiceState(data);
+			VoiceState voice_state(data);
 			onVoiceStateUpdate(voice_state);
 		}
 		break;
@@ -442,7 +500,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		case EventId::VOICE_SERVER_UPDATE:
 		{
 			QString token = data["token"].toString();
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			QString endpoint = data["endpoint"].toString();
 			onVoiceServerUpdate(token, guild_id, endpoint);
 		}
@@ -450,8 +508,9 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 
 		case EventId::WEBHOOKS_UPDATE:
 		{
-			snowflake_t guild_id = Serializer::snowflake(data["guild_id"]);
-			snowflake_t channel_id = Serializer::snowflake(data["channel_id"]);
+			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
+			snowflake_t channel_id =
+				data["channel_id"].toString().toULongLong();
 			onWebhooksUpdate(guild_id, channel_id);
 		}
 		break;

@@ -6,8 +6,8 @@
 
 QDISCORD_NAMESPACE_BEGIN
 
+class Channel;
 class Token;
-struct Channel;
 
 class HttpService : public QObject
 {

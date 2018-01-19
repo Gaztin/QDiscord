@@ -1,12 +1,12 @@
 #pragma once
-#include "Discord/Channel.h"
+#include "Discord/Objects/Channel.h"
+#include "Discord/Objects/Message.h"
+#include "Discord/Objects/Reaction.h"
+#include "Discord/Objects/User.h"
 #include "Discord/GatewaySocket.h"
 #include "Discord/HttpService.h"
-#include "Discord/Message.h"
 #include "Discord/Promise.h"
-#include "Discord/Reaction.h"
 #include "Discord/Token.h"
-#include "Discord/User.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -16,15 +16,15 @@ class QJsonObject;
 
 QDISCORD_NAMESPACE_BEGIN
 
-struct Activity;
-struct Channel;
-struct Emoji;
-struct Guild;
-struct GuildMember;
-struct Message;
-struct Role;
-struct User;
-struct VoiceState;
+class Channel;
+class Activity;
+class Emoji;
+class Guild;
+class GuildMember;
+class Message;
+class Role;
+class User;
+class VoiceState;
 
 class Client : public QObject
 {

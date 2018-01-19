@@ -80,7 +80,7 @@ void GatewaySocket::identify()
 	event_data["shard"] = shard_data;
 
 	Payload payload;
-	payload.opcode = Opcode::IDENTIFY;
+	payload.opcode = PayloadOpcode::IDENTIFY;
 	payload.event_data = event_data;
 
 	sendPayload(payload);
@@ -95,7 +95,7 @@ void GatewaySocket::resumeSession(const QString& session_token,
 	event_data["seq"] = static_cast<int>(last_sequence_number_);
 
 	Payload payload;
-	payload.opcode = Opcode::RESUME;
+	payload.opcode = PayloadOpcode::RESUME;
 	payload.event_data = event_data;
 
 	sendPayload(payload);
@@ -104,7 +104,7 @@ void GatewaySocket::resumeSession(const QString& session_token,
 void GatewaySocket::heartbeat()
 {
 	Payload payload;
-	payload.opcode = Opcode::HEARTBEAT;
+	payload.opcode = PayloadOpcode::HEARTBEAT;
 	payload.sequence_number = last_sequence_number_;
 
 	sendPayload(payload);
@@ -141,7 +141,7 @@ void GatewaySocket::onTextMessageReceived(const QString& message)
 	QJsonObject json_object = json_document.object();
 	Payload payload;
 
-	payload.opcode = static_cast<Opcode>(json_object["op"].toInt());
+	payload.opcode = static_cast<PayloadOpcode>(json_object["op"].toInt());
 	payload.event_data = json_object["d"].toObject();
 	payload.sequence_number = json_object["s"].toInt();
 	payload.event_name = json_object["t"].toString();
@@ -167,21 +167,21 @@ void GatewaySocket::handleIncomingPayload(const Payload& payload)
 {
 	switch (payload.opcode)
 	{
-		case Opcode::DISPATCH:
+		case PayloadOpcode::DISPATCH:
 			last_sequence_number_ = payload.sequence_number;
 			emit event(payload.event_name, payload.event_data.toObject());
 		break;
 
-		case Opcode::HEARTBEAT:
+		case PayloadOpcode::HEARTBEAT:
 			heartbeat();
 		break;
 
-		case Opcode::RECONNECT:
+		case PayloadOpcode::RECONNECT:
 			disconnectFromGateway();
 			connectToGateway(last_gateway_, token_);
 		break;
 
-		case Opcode::INVALID_SESSION:
+		case PayloadOpcode::INVALID_SESSION:
 		{
 			const bool should_retry = payload.event_data.toBool();
 			if (should_retry)
@@ -201,7 +201,7 @@ void GatewaySocket::handleIncomingPayload(const Payload& payload)
 		}
 		break;
 
-		case Opcode::HELLO:
+		case PayloadOpcode::HELLO:
 		{
 			QJsonObject json_object = payload.event_data.toObject();
 			const int heartbeat_interval = json_object.value(
@@ -214,7 +214,7 @@ void GatewaySocket::handleIncomingPayload(const Payload& payload)
 		}
 		break;
 
-		case Opcode::HEARTHBEAT_ACK:
+		case PayloadOpcode::HEARTHBEAT_ACK:
 			heartbeat_answered_ = true;
 		break;
 

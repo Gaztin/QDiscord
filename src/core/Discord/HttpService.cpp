@@ -1,6 +1,5 @@
 #include "HttpService.h"
 
-#include "Discord/Channel.h"
 #include "Discord/Payload.h"
 #include "Discord/Token.h"
 
