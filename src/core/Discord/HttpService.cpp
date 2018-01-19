@@ -39,6 +39,12 @@ QNetworkReply* HttpService::put(const Token& token, const QString& endpoint,
 	return sendRequest("PUT", token, endpoint, payload);
 }
 
+QNetworkReply* HttpService::patch(const Token& token, const QString& endpoint,
+		const QJsonObject& payload)
+{
+	return sendRequest("PATCH", token, endpoint, payload);
+}
+
 void HttpService::onReply(QNetworkReply* reply)
 {
 #ifdef QT_DEBUG

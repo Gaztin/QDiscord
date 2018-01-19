@@ -20,6 +20,8 @@ public:
 		const QJsonObject& payload);
 	QNetworkReply* put(const Token& token, const QString& endpoint,
 		const QJsonObject& payload);
+	QNetworkReply* patch(const Token& token, const QString& endpoint,
+		const QJsonObject& payload);
 
 private slots:
 	void onReply(QNetworkReply* reply);
