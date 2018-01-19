@@ -23,6 +23,7 @@ class Emoji;
 class Guild;
 class GuildPatch;
 class GuildMember;
+class GuildMemberPatch;
 class Message;
 class Role;
 class User;
@@ -55,6 +56,8 @@ public:
 	void modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
 	void modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch);
+	void modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
+		const GuildMemberPatch& guild_member_patch);
 
 protected:
 	virtual void onReady(const User& user,
