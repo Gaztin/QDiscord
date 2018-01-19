@@ -1,11 +1,12 @@
 #pragma once
 #include "Discord/Objects/Overwrite.h"
+#include "Discord/Patches/Patch.h"
 
 #include <QtCore/QJsonObject>
 
 QDISCORD_NAMESPACE_BEGIN
 
-class ChannelPatch
+class ChannelPatch : public Patch
 {
 public:
 	void addPermissionOverwrite(const Overwrite& permission_overwrite);
@@ -22,11 +23,6 @@ public:
 	void setUserLimit(int user_limit);
 
 	void setNsfw(bool nsfw);
-
-	operator QJsonObject() const { return data_; };
-
-private:
-	QJsonObject data_;
 };
 
 QDISCORD_NAMESPACE_END
