@@ -1,6 +1,9 @@
 #include "TestBotClient.h"
 
 #include <Discord/Objects/Message.h>
+#include <Discord/Patches/ChannelPatch.h>
+#include <Discord/Patches/GuildPatch.h>
+#include <Discord/Patches/GuildMemberPatch.h>
 #include <Discord/Promise.h>
 
 TestBotClient::TestBotClient(QObject* parent)
@@ -89,6 +92,83 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 	else if (message.content() == "!trigger")
 	{
 		triggerTypingIndicator(message.channelId());
+	}
+	else if (message.content().startsWith("!modify "))
+	{
+		QStringList args = message.content().split(' ');
+		if (args.length() >= 5)
+		{
+			if (args[1] == "channel")
+			{
+				snowflake_t channel_id = args[2].toULongLong();
+				Discord::ChannelPatch patch;
+
+				for (int i = 3; (i + 1) < args.length(); i += 2)
+				{
+					if (args[i] == "name")
+					{
+						patch.setName(args[i + 1]);
+					}
+					else if (args[i] == "nsfw")
+					{
+						if (args[i + 1] == "true")
+							patch.setNsfw(true);
+						else if (args[i + 1] == "false")
+							patch.setNsfw(false);
+					}
+					else if (args[i] == "topic")
+					{
+						patch.setTopic(args[i + 1]);
+					}
+				}
+
+				modifyChannel(channel_id, patch);
+			}
+			else if (args[1] == "guild")
+			{
+				snowflake_t guild_id = args[2].toULongLong();
+				Discord::GuildPatch patch;
+
+				for (int i = 3; (i + 1) < args.length(); i += 2)
+				{
+					if (args[i] == "name")
+					{
+						patch.setName(args[i + 1]);
+					}
+				}
+
+				modifyGuild(guild_id, patch);
+			}
+			else if (args[1] == "member")
+			{
+				QStringList ids = args[2].split(',');
+				if (ids.length() == 2)
+				{
+					snowflake_t guild_id = ids[0].toULongLong();
+					snowflake_t user_id = ids[1].toULongLong();
+					Discord::GuildMemberPatch patch;
+
+					for (int i = 3; (i + 1) < args.length(); i += 2)
+					{
+						if (args[i] == "nick")
+						{
+							patch.setNick(args[i + 1]);
+						}
+						else if (args[i] == "roles")
+						{
+							QStringList roles = args[i + 1].split(',');
+							QList<snowflake_t> role_ids;
+							for (const QString& role : roles)
+								role_ids.append(role.toULongLong());
+
+							patch.setRoles(role_ids);
+						}
+					}
+
+					modifyGuildMember(guild_id, user_id, patch);
+				}
+			}
+		}
 	}
 
 #ifdef QT_DEBUG
