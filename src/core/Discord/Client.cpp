@@ -2,6 +2,7 @@
 
 #include "Discord/Objects/Guild.h"
 #include "Discord/Patches/ChannelPatch.h"
+#include "Discord/Patches/GuildPatch.h"
 #include "Discord/GatewayEvents.h"
 
 #include <QtCore/QJsonArray>
@@ -210,6 +211,14 @@ void Client::modifyChannel(snowflake_t channel_id,
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
 	QJsonObject payload(channel_patch);
+
+	http_service_.patch(token_, endpoint, payload);
+}
+
+void Client::modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch)
+{
+	QString endpoint = QString("/guilds/%1").arg(guild_id);
+	QJsonObject payload(guild_patch);
 
 	http_service_.patch(token_, endpoint, payload);
 }
