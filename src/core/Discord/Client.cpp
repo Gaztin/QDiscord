@@ -231,8 +231,6 @@ void Client::modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
 		user_id);
 	QJsonObject payload(guild_member_patch);
 
-	qDebug() <<payload;
-
 	http_service_.patch(token_, endpoint, payload);
 }
 
