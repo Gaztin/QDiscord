@@ -22,6 +22,7 @@ class ChannelPatch;
 class ChannelPermissionsPatch;
 class Activity;
 class Emoji;
+class EmojiPatch;
 class Guild;
 class GuildPatch;
 class GuildMember;
@@ -48,6 +49,8 @@ public:
 		snowflake_t message_id, const QString& emoji);
 	Promise<QList<Invite>>& getChannelInvites(snowflake_t channel_id);
 	Promise<QList<Message>>& getPinnedMessages(snowflake_t channel_id);
+	Promise<QList<Emoji>>& listGuildEmojis(snowflake_t guild_id);
+	Promise<Emoji>& getGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id);
 
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -63,6 +66,7 @@ public:
 	void deletePinnedChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id);
 	void groupDmRemoveRecipient(snowflake_t channel_id, snowflake_t user_id);
+	void deleteGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id);
 
 	void createMessage(snowflake_t channel_id, const QString& content);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -73,6 +77,8 @@ public:
 		snowflake_t message_id);
 	void groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
 		const QString& access_token, const QString& nick);
+	void createGuildEmoji(snowflake_t guild_id, const QString& name,
+		const QByteArray& image, const QList<snowflake_t>& role_ids);
 
 	void modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
@@ -80,7 +86,8 @@ public:
 		const MessagePatch& message_patch);
 	void editChannelPermissions(snowflake_t channel_id,
 		snowflake_t overwrite_id, int allow, int deny, const QString& type);
-
+	void modifyGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id,
+		const EmojiPatch& emoji_patch);
 	void modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch);
 	void modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
 		const GuildMemberPatch& guild_member_patch);

@@ -2,6 +2,7 @@
 
 #include "Discord/Objects/Guild.h"
 #include "Discord/Patches/ChannelPatch.h"
+#include "Discord/Patches/EmojiPatch.h"
 #include "Discord/Patches/GuildPatch.h"
 #include "Discord/Patches/GuildMemberPatch.h"
 #include "Discord/Patches/MessagePatch.h"
@@ -193,6 +194,52 @@ Promise<QList<Message>>& Client::getPinnedMessages(snowflake_t channel_id)
 	return (*promise);
 }
 
+Promise<QList<Emoji>>& Client::listGuildEmojis(snowflake_t guild_id)
+{
+	QString endpoint = QString("/guilds/%1/emojis").arg(guild_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Emoji>>* promise = new Promise<QList<Emoji>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray guild_emojis_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Emoji> emojis;
+		for (QJsonValue guild_emoji_value : guild_emojis_array)
+		{
+			emojis.append(Emoji(guild_emoji_value.toObject()));
+		}
+
+		promise->resolve(emojis);
+	});
+
+	return (*promise);
+}
+
+Promise<Emoji>& Client::getGuildEmoji(snowflake_t guild_id,
+		snowflake_t emoji_id)
+{
+	QString endpoint = QString("/guilds/%1/emojis/%2").arg(guild_id).arg(
+		emoji_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Emoji>* promise = new Promise<Emoji>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject guild_emoji_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Emoji emoji(guild_emoji_object);
+
+		promise->resolve(emoji);
+	});
+
+	return (*promise);
+}
+
 void Client::deleteChannel(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
@@ -278,6 +325,14 @@ void Client::groupDmRemoveRecipient(snowflake_t channel_id,
 	http_service_.del(token_, endpoint);
 }
 
+void Client::deleteGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id)
+{
+	QString endpoint = QString("/guilds/%1/emojis/%2").arg(guild_id).arg(
+		emoji_id);
+
+	http_service_.del(token_, endpoint);
+}
+
 void Client::createMessage(snowflake_t channel_id, const QString& content)
 {
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
@@ -334,6 +389,25 @@ void Client::groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
 	http_service_.put(token_, endpoint, payload);
 }
 
+void Client::createGuildEmoji(snowflake_t guild_id, const QString& name,
+		const QByteArray& image, const QList<snowflake_t>& role_ids)
+{
+	QString endpoint = QString("/guilds/%1/emojis").arg(guild_id);
+	QJsonObject payload;
+	QJsonArray role_ids_array;
+
+	for (snowflake_t role_id : role_ids)
+	{
+		role_ids_array.append(QString::number(role_id));
+	}
+
+	payload["name"] = name;
+	payload["image"] = QString(image);
+	payload["roles"] = role_ids_array;
+
+	http_service_.post(token_, endpoint, payload);
+}
+
 void Client::modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch)
 {
@@ -363,6 +437,15 @@ void Client::editChannelPermissions(snowflake_t channel_id,
 	payload["type"] = type;
 
 	http_service_.put(token_, endpoint, payload);
+}
+
+void Client::modifyGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id,
+		const EmojiPatch& emoji_patch)
+{
+	QString endpoint = QString("/guilds/%1/emojis/%2").arg(guild_id).arg(
+		emoji_id);
+
+	http_service_.patch(token_, endpoint, emoji_patch);
 }
 
 void Client::modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch)
