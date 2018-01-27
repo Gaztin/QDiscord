@@ -1,5 +1,6 @@
 #pragma once
 #include "Discord/Objects/Channel.h"
+#include "Discord/Objects/Invite.h"
 #include "Discord/Objects/Message.h"
 #include "Discord/Objects/Reaction.h"
 #include "Discord/Objects/User.h"
@@ -18,6 +19,7 @@ QDISCORD_NAMESPACE_BEGIN
 
 class Channel;
 class ChannelPatch;
+class ChannelPermissionsPatch;
 class Activity;
 class Emoji;
 class Guild;
@@ -25,6 +27,7 @@ class GuildPatch;
 class GuildMember;
 class GuildMemberPatch;
 class Message;
+class MessagePatch;
 class Role;
 class User;
 class VoiceState;
@@ -38,26 +41,51 @@ public:
 	void logout();
 
 	Promise<Channel>& getChannel(snowflake_t channel_id);
-	Promise<Message>& getMessage(snowflake_t channel_id,
+	Promise<QList<Message>>& getChannelMessages(snowflake_t channel_id);
+	Promise<Message>& getChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id);
-	Promise<QList<Message>>& getMessages(snowflake_t channel_id);
 	Promise<QList<Reaction>>& getReactions(snowflake_t channel_id,
 		snowflake_t message_id, const QString& emoji);
-	Promise<QList<Message>>& getPins(snowflake_t channel_id);
+	Promise<QList<Invite>>& getChannelInvites(snowflake_t channel_id);
+	Promise<QList<Message>>& getPinnedMessages(snowflake_t channel_id);
 
-	void sendMessage(snowflake_t channel_id, const QString& content);
-	void addReaction(snowflake_t channel_id, snowflake_t message_id,
+	void deleteChannel(snowflake_t channel_id);
+	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
-	void removeReaction(snowflake_t channel_id, snowflake_t message_id,
-		const QString& emoji, snowflake_t user_id = 0);
-	void removeAllReactions(snowflake_t channel_id, snowflake_t message_id);
-	void triggerTypingIndicator(snowflake_t channel_id);
+	void deleteUserReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji, snowflake_t user_id);
+	void deleteAllReactions(snowflake_t channel_id, snowflake_t message_id);
+	void deleteMessage(snowflake_t channel_id, snowflake_t message_id);
+	void bulkDeleteMessages(snowflake_t channel_id,
+		const QList<snowflake_t>& message_ids);
+	void deleteChannelPermission(snowflake_t channel_id,
+		snowflake_t overwrite_id);
+	void deletePinnedChannelMessage(snowflake_t channel_id,
+		snowflake_t message_id);
+	void groupDmRemoveRecipient(snowflake_t channel_id, snowflake_t user_id);
+
+	void createMessage(snowflake_t channel_id, const QString& content);
+	void createReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji);
+	void createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,
+		bool temporary, bool unique);
+	void addPinnedChannelMessage(snowflake_t channel_id,
+		snowflake_t message_id);
+	void groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
+		const QString& access_token, const QString& nick);
 
 	void modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
+	void editMessage(snowflake_t channel_id, snowflake_t message_id,
+		const MessagePatch& message_patch);
+	void editChannelPermissions(snowflake_t channel_id,
+		snowflake_t overwrite_id, int allow, int deny, const QString& type);
+
 	void modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch);
 	void modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
 		const GuildMemberPatch& guild_member_patch);
+
+	void triggerTypingIndicator(snowflake_t channel_id);
 
 protected:
 	virtual void onReady(const User& user,

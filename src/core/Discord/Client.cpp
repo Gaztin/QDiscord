@@ -4,6 +4,7 @@
 #include "Discord/Patches/ChannelPatch.h"
 #include "Discord/Patches/GuildPatch.h"
 #include "Discord/Patches/GuildMemberPatch.h"
+#include "Discord/Patches/MessagePatch.h"
 #include "Discord/GatewayEvents.h"
 
 #include <QtCore/QJsonArray>
@@ -61,8 +62,9 @@ Promise<Channel>& Client::getChannel(snowflake_t channel_id)
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
-		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
-		Channel channel(data);
+		QJsonObject channel_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Channel channel(channel_object);
 
 		promise->resolve(channel);
 	});
@@ -70,7 +72,31 @@ Promise<Channel>& Client::getChannel(snowflake_t channel_id)
 	return (*promise);
 }
 
-Promise<Message>& Client::getMessage(snowflake_t channel_id,
+Promise<QList<Message>>& Client::getChannelMessages(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray channel_messages_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Message> messages;
+		for (QJsonValue channel_message_value : channel_messages_array)
+		{
+			messages.append(Message(channel_message_value.toObject()));
+		}
+
+		promise->resolve(messages);
+	});
+
+	return (*promise);
+}
+
+Promise<Message>& Client::getChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id)
 {
 	QString endpoint = QString("/channels/%1/messages/%2").arg(channel_id).arg(
@@ -82,33 +108,11 @@ Promise<Message>& Client::getMessage(snowflake_t channel_id,
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
-		QJsonObject data = QJsonDocument::fromJson(reply->readAll()).object();
-		Message message(data);
+		QJsonObject channel_message_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Message message(channel_message_object);
 
 		promise->resolve(message);
-	});
-
-	return (*promise);
-}
-
-Promise<QList<Message>>& Client::getMessages(snowflake_t channel_id)
-{
-	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
-	QNetworkReply* reply = http_service_.get(token_, endpoint);
-	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
-
-	connect(reply, &QNetworkReply::finished, [reply, promise]{
-		if (reply->error() != QNetworkReply::NoError)
-			return promise->reject();
-
-		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
-		QList<Message> messages;
-		for (QJsonValue value : data)
-		{
-			messages.append(Message(value.toObject()));
-		}
-
-		promise->resolve(messages);
 	});
 
 	return (*promise);
@@ -126,11 +130,12 @@ Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
-		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
+		QJsonArray reactions_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
 		QList<Reaction> reactions;
-		for (QJsonValue value : data)
+		for (QJsonValue reaction_value : reactions_array)
 		{
-			reactions.append(Reaction(value.toObject()));
+			reactions.append(Reaction(reaction_value.toObject()));
 		}
 
 		promise->resolve(reactions);
@@ -139,7 +144,32 @@ Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
 	return (*promise);
 }
 
-Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
+Promise<QList<Invite>>& Client::getChannelInvites(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/invites").arg(channel_id);
+
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Invite>>* promise = new Promise<QList<Invite>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray invites_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Invite> invites;
+		for (QJsonValue invite_value : invites_array)
+		{
+			invites.append(Invite(invite_value.toObject()));
+		}
+
+		promise->resolve(invites);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Message>>& Client::getPinnedMessages(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1/pins").arg(channel_id);
 	QNetworkReply* reply = http_service_.get(token_, endpoint);
@@ -149,11 +179,12 @@ Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
-		QJsonArray data = QJsonDocument::fromJson(reply->readAll()).array();
+		QJsonArray pinned_messages_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
 		QList<Message> pins;
-		for (QJsonValue value : data)
+		for (QJsonValue pinned_message_value : pinned_messages_array)
 		{
-			pins.append(Message(value.toObject()));
+			pins.append(Message(pinned_message_value.toObject()));
 		}
 
 		promise->resolve(pins);
@@ -162,7 +193,92 @@ Promise<QList<Message>>& Client::getPins(snowflake_t channel_id)
 	return (*promise);
 }
 
-void Client::sendMessage(snowflake_t channel_id, const QString& content)
+void Client::deleteChannel(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1").arg(channel_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji)
+{
+	QString endpoint = QString(
+		"/channels/%1/messages/%2/reactions/%3/@me").arg(channel_id).arg(
+			message_id).arg(emoji);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteUserReaction(snowflake_t channel_id, snowflake_t message_id,
+		const QString& emoji, snowflake_t user_id)
+{
+	QString endpoint = QString("/channels/%1/messages/%2/reactions/%3/%4").arg(
+		channel_id).arg(message_id).arg(emoji).arg(user_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteAllReactions(snowflake_t channel_id, snowflake_t message_id)
+{
+	QString endpoint = QString("/channels/%1/messages/%2/reactions").arg(
+		channel_id).arg(message_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteMessage(snowflake_t channel_id, snowflake_t message_id)
+{
+	QString endpoint = QString("/channels/%1/messages/%2").arg(channel_id).arg(
+		message_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::bulkDeleteMessages(snowflake_t channel_id,
+		const QList<snowflake_t>& message_ids)
+{
+	QString endpoint = QString("/channels/%1/messages/bulk-delete").arg(
+		channel_id);
+	QJsonArray message_ids_array;
+	QJsonObject payload;
+
+	for (snowflake_t message_id : message_ids)
+		message_ids_array.append(QString::number(message_id));
+
+	payload["messages"] = message_ids_array;
+
+	http_service_.post(token_, endpoint, payload);
+}
+
+void Client::deleteChannelPermission(snowflake_t channel_id,
+		snowflake_t overwrite_id)
+{
+	QString endpoint = QString("/channels/%1/permissions/%2").arg(
+		channel_id).arg(overwrite_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deletePinnedChannelMessage(snowflake_t channel_id,
+		snowflake_t message_id)
+{
+	QString endpoint = QString("/channels/%1/pins/%2").arg(channel_id).arg(
+		message_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::groupDmRemoveRecipient(snowflake_t channel_id,
+		snowflake_t user_id)
+{
+	QString endpoint = QString("/channels/%1/recipients/%2").arg(
+		channel_id).arg(user_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::createMessage(snowflake_t channel_id, const QString& content)
 {
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
 	QJsonObject payload;
@@ -172,7 +288,7 @@ void Client::sendMessage(snowflake_t channel_id, const QString& content)
 	http_service_.post(token_, endpoint, payload);
 }
 
-void Client::addReaction(snowflake_t channel_id, snowflake_t message_id,
+void Client::createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji)
 {
 	QString endpoint = QString(
@@ -182,46 +298,78 @@ void Client::addReaction(snowflake_t channel_id, snowflake_t message_id,
 	http_service_.put(token_, endpoint, QJsonObject());
 }
 
-void Client::removeReaction(snowflake_t channel_id, snowflake_t message_id,
-		const QString& emoji, snowflake_t user_id)
+void Client::createChannelInvite(snowflake_t channel_id, int max_age,
+		int max_uses, bool temporary, bool unique)
 {
-	QString user_string = (user_id == 0) ? "@me" : QString::number(user_id);
-	QString endpoint = QString("/channels/%1/messages/%2/reactions/%3/%4").arg(
-		channel_id).arg(message_id).arg(emoji).arg(user_string);
+	QString endpoint = QString("/channels/%1/invites").arg(channel_id);
+	QJsonObject payload;
 
-	http_service_.del(token_, endpoint);
+	payload["max_age"] = max_age;
+	payload["max_uses"] = max_uses;
+	payload["temporary"] = temporary;
+	payload["unique"] = unique;
+
+	http_service_.post(token_, endpoint, payload);
 }
 
-void Client::removeAllReactions(snowflake_t channel_id, snowflake_t message_id)
+void Client::addPinnedChannelMessage(snowflake_t channel_id,
+		snowflake_t message_id)
 {
-	QString endpoint = QString("/channels/%1/messages/%2/reactions").arg(
-		channel_id).arg(message_id);
+	QString endpoint = QString("/channels/%1/pins/%2").arg(channel_id).arg(
+		message_id);
 
-	http_service_.del(token_, endpoint);
+	http_service_.put(token_, endpoint, QJsonObject());
 }
 
-void Client::triggerTypingIndicator(snowflake_t channel_id)
+void Client::groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
+		const QString& access_token, const QString& nick)
 {
-	QString endpoint = QString("/channels/%1/typing").arg(channel_id);
+	QString endpoint = QString("/channels/%1/recipients/%2").arg(
+		channel_id).arg(user_id);
+	QJsonObject payload;
 
-	http_service_.post(token_, endpoint, QJsonObject());
+	payload["access_token"] = access_token;
+	payload["nick"] = nick;
+
+	http_service_.put(token_, endpoint, payload);
 }
 
 void Client::modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
-	QJsonObject payload(channel_patch);
 
-	http_service_.patch(token_, endpoint, payload);
+	http_service_.patch(token_, endpoint, channel_patch);
+}
+
+void Client::editMessage(snowflake_t channel_id, snowflake_t message_id,
+		const MessagePatch& message_patch)
+{
+	QString endpoint = QString("/channels/%1/messages/%2").arg(channel_id).arg(
+		message_id);
+
+	http_service_.patch(token_, endpoint, message_patch);
+}
+
+void Client::editChannelPermissions(snowflake_t channel_id,
+		snowflake_t overwrite_id, int allow, int deny, const QString& type)
+{
+	QString endpoint = QString("/channels/%1/permissions/%2").arg(
+		channel_id).arg(overwrite_id);
+	QJsonObject payload;
+
+	payload["allow"] = allow;
+	payload["deny"] = deny;
+	payload["type"] = type;
+
+	http_service_.put(token_, endpoint, payload);
 }
 
 void Client::modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch)
 {
 	QString endpoint = QString("/guilds/%1").arg(guild_id);
-	QJsonObject payload(guild_patch);
 
-	http_service_.patch(token_, endpoint, payload);
+	http_service_.patch(token_, endpoint, guild_patch);
 }
 
 void Client::modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
@@ -229,9 +377,15 @@ void Client::modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
 {
 	QString endpoint = QString("/guilds/%1/members/%2").arg(guild_id).arg(
 		user_id);
-	QJsonObject payload(guild_member_patch);
 
-	http_service_.patch(token_, endpoint, payload);
+	http_service_.patch(token_, endpoint, guild_member_patch);
+}
+
+void Client::triggerTypingIndicator(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/typing").arg(channel_id);
+
+	http_service_.post(token_, endpoint, QJsonObject());
 }
 
 void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
