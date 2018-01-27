@@ -19,12 +19,18 @@ HttpService::HttpService(const QString& user_agent, QObject* parent)
 
 QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
 {
-	return sendRequest("GET", token, endpoint);
+	return sendRequest("GET", token, endpoint, QJsonObject());
+}
+
+QNetworkReply* HttpService::get(const Token& token, const QString& endpoint,
+		const QJsonObject& payload)
+{
+	return sendRequest("GET", token, endpoint, payload);
 }
 
 QNetworkReply* HttpService::del(const Token& token, const QString& endpoint)
 {
-	return sendRequest("DELETE", token, endpoint);
+	return sendRequest("DELETE", token, endpoint, QJsonObject());
 }
 
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,

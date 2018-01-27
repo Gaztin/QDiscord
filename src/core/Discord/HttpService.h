@@ -15,6 +15,8 @@ public:
 	HttpService(const QString& user_agent, QObject* parent = nullptr);
 
 	QNetworkReply* get(const Token& token, const QString& endpoint);
+	QNetworkReply* get(const Token& token, const QString& endpoint,
+		const QJsonObject& payload);
 	QNetworkReply* del(const Token& token, const QString& endpoint);
 	QNetworkReply* post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload);
@@ -28,7 +30,7 @@ private slots:
 
 private:
 	QNetworkReply* sendRequest(const QByteArray& verb, const Token& token,
-		const QString& endpoint, const QJsonObject& payload = QJsonObject());
+		const QString& endpoint, const QJsonObject& payload);
 
 	QString user_agent_;
 	QNetworkAccessManager network_access_manager_;
