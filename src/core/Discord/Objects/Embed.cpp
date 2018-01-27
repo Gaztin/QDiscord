@@ -20,11 +20,6 @@ EmbedImage::EmbedImage(const QJsonObject& data)
 {
 }
 
-EmbedThumbnail::EmbedThumbnail(const QJsonObject& data)
-	: url_(data["url"].toString())
-	, proxy_url_(data["proxy_url"].toString())
-	, height_(data["height"].toInt())
-	, width_(data["width"].toInt())
 {
 
 }

@@ -25,17 +25,6 @@ class EmbedImage
 public:
 	explicit EmbedImage(const QJsonObject& data);
 
-private:
-	QString url_;
-	QString proxy_url_;
-	int height_;
-	int width_;
-};
-
-class EmbedThumbnail
-{
-public:
-	explicit EmbedThumbnail(const QJsonObject& data);
 
 private:
 	QString url_;
@@ -101,12 +90,12 @@ public:
 	const QString& description() const { return description_; }
 	const QString& url() const { return url_; }
 	
-	EmbedFooter footer() const { return footer_; }
-	EmbedImage image() const { return image_; }
-	EmbedThumbnail thumbnail() const { return thumbnail_; }
-	EmbedVideo video() const { return video_; }
-	EmbedProvider provider() const { return provider_; }
-	EmbedAuthor author() const { return author_; }
+	const EmbedFooter& footer() const { return footer_; }
+	const EmbedImage& image() const { return image_; }
+	const EmbedImage& thumbnail() const { return thumbnail_; }
+	const EmbedVideo& video() const { return video_; }
+	const EmbedProvider& provider() const { return provider_; }
+	const EmbedAuthor& author() const { return author_; }
 	
 	int color() const { return color_; }
 
@@ -121,7 +110,7 @@ private:
 	
 	EmbedFooter footer_;
 	EmbedImage image_;
-	EmbedThumbnail thumbnail_;
+	EmbedImage thumbnail_;
 	EmbedVideo video_;
 	EmbedProvider provider_;
 	EmbedAuthor author_;
