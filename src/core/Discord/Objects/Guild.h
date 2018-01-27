@@ -83,6 +83,8 @@ public:
 	bool large() const { return large_; }
 	bool unavailable() const { return unavailable_; }
 
+	operator QJsonObject() const;
+
 private:
 	QList<Role> roles_;
 	QList<Emoji> emojis_;

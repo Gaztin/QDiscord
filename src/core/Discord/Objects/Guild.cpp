@@ -76,4 +76,32 @@ Guild::Guild(const QJsonObject& data)
 	}
 }
 
+Guild::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["joined_at"] = joined_at_.toString();
+	data["name"] = name_;
+	data["icon"] = icon_;
+	data["splash"] = splash_;
+	data["region"] = region_;
+	data["verification_level"] = static_cast<int>(verification_level_);
+	data["default_message_notifications"] = static_cast<int>(default_message_notifications_);
+	data["explicit_content_filter"] = static_cast<int>(explicit_content_filter_);
+	data["mfa_level_"] = static_cast<int>(mfa_level_);
+	data["id"] = QString::number(id_);
+	data["owner_id"] = QString::number(owner_id_);
+	data["afk_channel_id"] = QString::number(afk_channel_id_);
+	data["embed_channel_id"] = QString::number(embed_channel_id_);
+	data["application_id"] = QString::number(application_id_);
+	data["widget_channel_id"] = QString::number(widget_channel_id_);
+	data["afk_timeout"] = afk_timeout_;
+	data["member_count"] = member_count_;
+	data["embed_enabled"] = embed_enabled_;
+	data["widget_enabled"] = widget_enabled_;
+	data["large"] = large_;
+	data["unavailable"] = unavailable_;
+
+	return data;
+}
+
 QDISCORD_NAMESPACE_END

@@ -43,6 +43,8 @@ public:
 	int bitrate() const { return bitrate_; }
 	int userLimit() const { return user_limit_; }
 
+	operator QJsonObject() const;
+
 private:
 	QList<Overwrite> permission_overwrites_;
 	QList<User> recipients_;

@@ -16,4 +16,19 @@ User::User(const QJsonObject& data)
 {
 }
 
+User::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["username"] = username_;
+	data["discriminator"] = discriminator_;
+	data["avatar"] = avatar_;
+	data["email"] = email_;
+	data["id"] = QString::number(id_);
+	data["bot"] = bot_;
+	data["mfa_enabled"] = mfa_enabled_;
+	data["verified"] = verified_;
+
+	return data;
+}
+
 QDISCORD_NAMESPACE_END

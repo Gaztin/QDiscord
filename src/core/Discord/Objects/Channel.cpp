@@ -35,4 +35,23 @@ Channel::Channel(const QJsonObject& data)
 	}
 }
 
+Channel::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["name"] = name_;
+	data["topic"] = topic_;
+	data["icon"] = icon_;
+	data["type"] = static_cast<int>(type_);
+	data["id"] = QString::number(id_);
+	data["guild_id"] = QString::number(guild_id_);
+	data["owner_id"] = QString::number(owner_id_);
+	data["application_id"] = QString::number(application_id_);
+	data["last_message_id"] = QString::number(last_message_id_);
+	data["position"] = position_;
+	data["bitrate"] = bitrate_;
+	data["user_limit"] = user_limit_;
+
+	return data;
+}
+
 QDISCORD_NAMESPACE_END

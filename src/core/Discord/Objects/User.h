@@ -23,6 +23,8 @@ public:
 	bool mfaEnabled() const { return mfa_enabled_; }
 	bool verified() const { return verified_; }
 
+	operator QJsonObject() const;
+
 private:
 	QString username_;
 	QString discriminator_;
