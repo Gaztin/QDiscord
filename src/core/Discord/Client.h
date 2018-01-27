@@ -78,6 +78,7 @@ public:
 	Promise<QList<Guild>>& getCurrentUserGuilds();
 	Promise<QList<Channel>>& getUserDms();
 	Promise<QList<Connection>>& getUserConnections();
+	Promise<QList<VoiceRegion>>& listVoiceRegions();
 
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,

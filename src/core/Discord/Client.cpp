@@ -641,6 +641,31 @@ Promise<QList<Connection>>& Client::getUserConnections()
 	return (*promise);
 }
 
+Promise<QList<VoiceRegion>>& Client::listVoiceRegions()
+{
+	QString endpoint("/voice/regions");
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<VoiceRegion>>* promise = new Promise<QList<VoiceRegion>>(
+		reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray voice_regions_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<VoiceRegion> voice_regions;
+		for (QJsonValue voice_region_value : voice_regions_array)
+		{
+			voice_regions.append(VoiceRegion(voice_region_value.toObject()));
+		}
+
+		promise->resolve(voice_regions);
+	});
+
+	return (*promise);
+}
+
 void Client::deleteChannel(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
