@@ -26,11 +26,11 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 	{
 		getChannel(message.channelId()).then([=](
 				const Discord::Channel& channel){
-			sendMessage(channel.id(), QString("Channel name is '%1'").arg(
+			createMessage(channel.id(), QString("Channel name is '%1'").arg(
 				channel.name()));
 
 		}).otherwise([=](){
-			sendMessage(message.channelId(), QString(
+			createMessage(message.channelId(), QString(
 				"Failed to get channel by ID: %1").arg(message.channelId()));
 		});
 	}
@@ -61,7 +61,7 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 
 		if (!new_messages.empty())
 		{
-			sendMessage(message.channelId(), new_messages.join('\n'));
+			createMessage(message.channelId(), new_messages.join('\n'));
 		}
 	}
 	else if (message.content().startsWith("!react "))
@@ -76,7 +76,7 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 			{
 				emoji.remove(0, 2);
 				emoji.remove(emoji.length() - 1, 1);
-				addReaction(message.channelId(), message.id(), emoji);
+				createReaction(message.channelId(), message.id(), emoji);
 			}
 		}
 	}
@@ -86,7 +86,7 @@ void TestBotClient::onMessageCreate(const Discord::Message& message)
 		if (args.size() == 2)
 		{
 			QString message_id = args[1];
-			removeAllReactions(message.channelId(), message_id.toULongLong());
+			deleteAllReactions(message.channelId(), message_id.toULongLong());
 		}
 	}
 	else if (message.content() == "!trigger")
