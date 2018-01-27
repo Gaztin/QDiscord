@@ -22,6 +22,7 @@ class Ban;
 class Channel;
 class ChannelPatch;
 class ChannelPermissionsPatch;
+class Connection;
 class Emoji;
 class EmojiPatch;
 class Guild;
@@ -37,6 +38,7 @@ class MessagePatch;
 class Role;
 class RolePatch;
 class User;
+class UserPatch;
 class VoiceRegion;
 class VoiceState;
 
@@ -71,6 +73,11 @@ public:
 	Promise<QList<Integration>>& getGuildIntegrations(snowflake_t guild_id);
 	Promise<GuildEmbed>& getGuildEmbed(snowflake_t guild_id);
 	Promise<Invite>& getInvite(const QString& invite_code);
+	Promise<User>& getCurrentUser();
+	Promise<User>& getUser(snowflake_t user_id);
+	Promise<QList<Guild>>& getCurrentUserGuilds();
+	Promise<QList<Channel>>& getUserDms();
+	Promise<QList<Connection>>& getUserConnections();
 
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -97,6 +104,7 @@ public:
 	void deleteGuildIntegration(snowflake_t guild_id,
 		snowflake_t integration_id);
 	void deleteInvite(const QString& invite_code);
+	void leaveGuild(snowflake_t guild_id);
 
 	void createMessage(snowflake_t channel_id, const QString& content);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -129,6 +137,9 @@ public:
 		int permissions, int color, bool hoist, bool mentionable);
 	void createGuildIntegration(snowflake_t guild_id, const QString& type,
 		snowflake_t id);
+	void createDm(snowflake_t recipient_id);
+	void createGroupDm(const QList<QString>& access_tokens,
+		const QList<QPair<snowflake_t, QString>>& nicks);
 
 	void modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
@@ -154,6 +165,7 @@ public:
 		snowflake_t integration_id);
 	void modifyGuildEmbed(snowflake_t guild_id,
 		const GuildEmbedPatch& guild_embed_patch);
+	void modifyCurrentUser(const UserPatch& user_patch);
 
 	void triggerTypingIndicator(snowflake_t channel_id);
 

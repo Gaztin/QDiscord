@@ -1,6 +1,7 @@
 #include "Client.h"
 
 #include "Discord/Objects/Ban.h"
+#include "Discord/Objects/Connection.h"
 #include "Discord/Objects/Guild.h"
 #include "Discord/Objects/GuildEmbed.h"
 #include "Discord/Objects/Integration.h"
@@ -13,6 +14,7 @@
 #include "Discord/Patches/IntegrationPatch.h"
 #include "Discord/Patches/MessagePatch.h"
 #include "Discord/Patches/RolePatch.h"
+#include "Discord/Patches/UserPatch.h"
 #include "Discord/GatewayEvents.h"
 
 #include <QtCore/QJsonArray>
@@ -526,6 +528,119 @@ Promise<Invite>& Client::getInvite(const QString& invite_code)
 	return (*promise);
 }
 
+Promise<User>& Client::getCurrentUser()
+{
+	QString endpoint("/users/@me");
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<User>* promise = new Promise<User>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject user_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		User user(user_object);
+
+		promise->resolve(user);
+	});
+
+	return (*promise);
+}
+
+Promise<User>& Client::getUser(snowflake_t user_id)
+{
+	QString endpoint = QString("/users/%1").arg(user_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<User>* promise = new Promise<User>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject user_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		User user(user_object);
+
+		promise->resolve(user);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Guild>>& Client::getCurrentUserGuilds()
+{
+	QString endpoint("/users/@me/guilds");
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Guild>>* promise = new Promise<QList<Guild>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray guilds_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Guild> guilds;
+		for (QJsonValue guild_value : guilds_array)
+		{
+			guilds.append(Guild(guild_value.toObject()));
+		}
+
+		promise->resolve(guilds);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Channel>>& Client::getUserDms()
+{
+	QString endpoint("/users/@me/channels");
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Channel>>* promise = new Promise<QList<Channel>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray channels_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Channel> channels;
+		for (QJsonValue channel_value : channels_array)
+		{
+			channels.append(Channel(channel_value.toObject()));
+		}
+
+		promise->resolve(channels);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Connection>>& Client::getUserConnections()
+{
+	QString endpoint("/users/@me/connections");
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Connection>>* promise = new Promise<QList<Connection>>(
+		reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray connections_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Connection> connections;
+		for (QJsonValue connection_value : connections_array)
+		{
+			connections.append(Connection(connection_value.toObject()));
+		}
+
+		promise->resolve(connections);
+	});
+
+	return (*promise);
+}
+
 void Client::deleteChannel(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
@@ -681,6 +796,13 @@ void Client::deleteGuildIntegration(snowflake_t guild_id,
 void Client::deleteInvite(const QString& invite_code)
 {
 	QString endpoint = QString("/invites/%1").arg(invite_code);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::leaveGuild(snowflake_t guild_id)
+{
+	QString endpoint = QString("/users/@me/guilds/%1").arg(guild_id);
 
 	http_service_.del(token_, endpoint);
 }
@@ -889,6 +1011,40 @@ void Client::createGuildIntegration(snowflake_t guild_id, const QString& type,
 	http_service_.post(token_, endpoint, payload);
 }
 
+void Client::createDm(snowflake_t recipient_id)
+{
+	QString endpoint("/users/@me/channels");
+	QJsonObject payload;
+
+	payload["recipient_id"] = QString::number(recipient_id);
+
+	http_service_.post(token_, endpoint, payload);
+}
+
+void Client::createGroupDm(const QList<QString>& access_tokens,
+		const QList<QPair<snowflake_t, QString>>& nicks)
+{
+	QString endpoint("/users/@me/channels");
+	QJsonObject payload;
+	QJsonArray access_tokens_array, nicks_array;
+
+	for (const QString& access_token : access_tokens)
+	{
+		access_tokens_array.append(access_token);
+	}
+	for (const QPair<snowflake_t, QString>& nick : nicks)
+	{
+		QJsonObject nick_object;
+		nick_object[QString::number(nick.first)] = nick.second;
+		nicks_array.append(nick_object);
+	}
+
+	payload["access_tokens"] = access_tokens_array;
+	payload["nicks"] = nicks_array;
+
+	http_service_.post(token_, endpoint, payload);
+}
+
 void Client::modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch)
 {
@@ -1031,6 +1187,13 @@ void Client::modifyGuildEmbed(snowflake_t guild_id,
 	QString endpoint = QString("/guilds/%1/embed").arg(guild_id);
 
 	http_service_.patch(token_, endpoint, guild_embed_patch);
+}
+
+void Client::modifyCurrentUser(const UserPatch& user_patch)
+{
+	QString endpoint("/users/@me");
+
+	http_service_.patch(token_, endpoint, user_patch);
 }
 
 void Client::triggerTypingIndicator(snowflake_t channel_id)
