@@ -506,6 +506,26 @@ Promise<GuildEmbed>& Client::getGuildEmbed(snowflake_t guild_id)
 	return (*promise);
 }
 
+Promise<Invite>& Client::getInvite(const QString& invite_code)
+{
+	QString endpoint = QString("/invites/%1").arg(invite_code);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Invite>* promise = new Promise<Invite>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject invite_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Invite invite(invite_object);
+
+		promise->resolve(invite);
+	});
+
+	return (*promise);
+}
+
 void Client::deleteChannel(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
@@ -654,6 +674,13 @@ void Client::deleteGuildIntegration(snowflake_t guild_id,
 {
 	QString endpoint = QString("/guilds/%1/integrations/%2").arg(guild_id).arg(
 		integration_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteInvite(const QString& invite_code)
+{
+	QString endpoint = QString("/invites/%1").arg(invite_code);
 
 	http_service_.del(token_, endpoint);
 }

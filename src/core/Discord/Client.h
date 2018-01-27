@@ -70,6 +70,7 @@ public:
 	Promise<QList<Invite>>& getGuildInvites(snowflake_t guild_id);
 	Promise<QList<Integration>>& getGuildIntegrations(snowflake_t guild_id);
 	Promise<GuildEmbed>& getGuildEmbed(snowflake_t guild_id);
+	Promise<Invite>& getInvite(const QString& invite_code);
 
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -95,6 +96,7 @@ public:
 	void beginGuildPrune(snowflake_t guild_id, int days);
 	void deleteGuildIntegration(snowflake_t guild_id,
 		snowflake_t integration_id);
+	void deleteInvite(const QString& invite_code);
 
 	void createMessage(snowflake_t channel_id, const QString& content);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
