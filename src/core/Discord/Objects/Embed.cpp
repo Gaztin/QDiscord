@@ -12,6 +12,16 @@ EmbedFooter::EmbedFooter(const QJsonObject& data)
 {
 }
 
+EmbedFooter::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["text"] = text_;
+	data["icon_url"] = icon_url_;
+	data["proxy_icon_url"] = proxy_icon_url_;
+
+	return data;
+}
+
 EmbedImage::EmbedImage(const QJsonObject& data)
 	: url_(data["url"].toString())
 	, proxy_url_(data["proxy_url"].toString())
@@ -20,8 +30,15 @@ EmbedImage::EmbedImage(const QJsonObject& data)
 {
 }
 
+EmbedImage::operator QJsonObject() const
 {
+	QJsonObject data;
+	data["url"] = url_;
+	data["proxy_url"] = proxy_url_;
+	data["height"] = height_;
+	data["width"] = width_;
 
+	return data;
 }
 
 EmbedVideo::EmbedVideo(const QJsonObject& data)
@@ -31,10 +48,29 @@ EmbedVideo::EmbedVideo(const QJsonObject& data)
 {
 }
 
+EmbedVideo::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["url"] = url_;
+	data["height"] = height_;
+	data["width"] = width_;
+
+	return data;
+}
+
 EmbedProvider::EmbedProvider(const QJsonObject& data)
 	: name_(data["name"].toString())
 	, url_(data["url"].toString())
 {
+}
+
+EmbedProvider::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["name"] = name_;
+	data["url"] = url_;
+
+	return data;
 }
 
 EmbedAuthor::EmbedAuthor(const QJsonObject& data)
@@ -43,7 +79,17 @@ EmbedAuthor::EmbedAuthor(const QJsonObject& data)
 	, icon_url_(data["icon_url"].toString())
 	, proxy_icon_url_(data["proxy_icon_url"].toString())
 {
+}
 
+EmbedAuthor::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["name"] = name_;
+	data["url"] = url_;
+	data["icon_url"] = icon_url_;
+	data["proxy_icon_url"] = proxy_icon_url_;
+
+	return data;
 }
 
 EmbedField::EmbedField(const QJsonObject& data)
@@ -51,6 +97,16 @@ EmbedField::EmbedField(const QJsonObject& data)
 	, value_(data["value"].toString())
 	, display_inline_(data["display_inline"].toBool())
 {
+}
+
+EmbedField::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["name"] = name_;
+	data["value"] = value_;
+	data["display_inline"] = display_inline_;
+
+	return data;
 }
 
 Embed::Embed(const QJsonObject& data)
@@ -73,6 +129,25 @@ Embed::Embed(const QJsonObject& data)
 	{
 		fields_.append(EmbedField(field_value.toObject()));
 	}
+}
+
+Embed::operator QJsonObject() const
+{
+	QJsonObject data;
+	data["timestamp"] = timestamp_.toString();
+	data["title"] = title_;
+	data["type"] = type_;
+	data["description"] = description_;
+	data["url"] = url_;
+	data["footer"] = QJsonObject(footer_);
+	data["image"] = QJsonObject(image_);
+	data["thumbnail"] = QJsonObject(image_);
+	data["video"] = QJsonObject(video_);
+	data["provider"] = QJsonObject(provider_);
+	data["author"] = QJsonObject(author_);
+	data["color"] = color_;
+
+	return data;
 }
 
 QDISCORD_NAMESPACE_END

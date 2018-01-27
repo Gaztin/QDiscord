@@ -14,6 +14,8 @@ class EmbedFooter
 public:
 	explicit EmbedFooter(const QJsonObject& data);
 
+	operator QJsonObject() const;
+
 private:
 	QString text_;
 	QString icon_url_;
@@ -25,6 +27,7 @@ class EmbedImage
 public:
 	explicit EmbedImage(const QJsonObject& data);
 
+	operator QJsonObject() const;
 
 private:
 	QString url_;
@@ -38,6 +41,8 @@ class EmbedVideo
 public:
 	explicit EmbedVideo(const QJsonObject& data);
 
+	operator QJsonObject() const;
+
 private:
 	QString url_;
 	int height_;
@@ -49,6 +54,8 @@ class EmbedProvider
 public:
 	explicit EmbedProvider(const QJsonObject& data);
 
+	operator QJsonObject() const;
+
 private:
 	QString name_;
 	QString url_;
@@ -58,6 +65,8 @@ class EmbedAuthor
 {
 public:
 	explicit EmbedAuthor(const QJsonObject& data);
+
+	operator QJsonObject() const;
 
 private:
 	QString name_;
@@ -70,6 +79,8 @@ class EmbedField
 {
 public:
 	explicit EmbedField(const QJsonObject& data);
+
+	operator QJsonObject() const;
 
 private:
 	QString name_;
@@ -98,6 +109,8 @@ public:
 	const EmbedAuthor& author() const { return author_; }
 	
 	int color() const { return color_; }
+
+	operator QJsonObject() const;
 
 private:
 	QList<EmbedField> fields_;
