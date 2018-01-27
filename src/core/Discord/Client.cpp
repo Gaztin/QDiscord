@@ -6,6 +6,7 @@
 #include "Discord/Objects/GuildEmbed.h"
 #include "Discord/Objects/Integration.h"
 #include "Discord/Objects/VoiceRegion.h"
+#include "Discord/Objects/Webhook.h"
 #include "Discord/Patches/ChannelPatch.h"
 #include "Discord/Patches/EmojiPatch.h"
 #include "Discord/Patches/GuildPatch.h"
@@ -15,6 +16,7 @@
 #include "Discord/Patches/MessagePatch.h"
 #include "Discord/Patches/RolePatch.h"
 #include "Discord/Patches/UserPatch.h"
+#include "Discord/Patches/WebhookPatch.h"
 #include "Discord/GatewayEvents.h"
 
 #include <QtCore/QJsonArray>
@@ -666,6 +668,95 @@ Promise<QList<VoiceRegion>>& Client::listVoiceRegions()
 	return (*promise);
 }
 
+Promise<QList<Webhook>>& Client::getChannelWebhooks(snowflake_t channel_id)
+{
+	QString endpoint = QString("/channels/%1/webhooks").arg(channel_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Webhook>>* promise = new Promise<QList<Webhook>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray webhooks_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Webhook> webhooks;
+		for (QJsonValue webhook_value : webhooks_array)
+		{
+			webhooks.append(Webhook(webhook_value.toObject()));
+		}
+
+		promise->resolve(webhooks);
+	});
+
+	return (*promise);
+}
+
+Promise<QList<Webhook>>& Client::getGuildWebhooks(snowflake_t guild_id)
+{
+	QString endpoint = QString("/guilds/%1/webhooks").arg(guild_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<QList<Webhook>>* promise = new Promise<QList<Webhook>>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonArray webhooks_array = QJsonDocument::fromJson(
+			reply->readAll()).array();
+		QList<Webhook> webhooks;
+		for (QJsonValue webhook_value : webhooks_array)
+		{
+			webhooks.append(Webhook(webhook_value.toObject()));
+		}
+
+		promise->resolve(webhooks);
+	});
+
+	return (*promise);
+}
+
+Promise<Webhook>& Client::getWebhook(snowflake_t webhook_id)
+{
+	QString endpoint = QString("/webhooks/%1").arg(webhook_id);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Webhook>* promise = new Promise<Webhook>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject webhook_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Webhook webhook(webhook_object);
+
+		promise->resolve(webhook);
+	});
+
+	return (*promise);
+}
+
+Promise<Webhook>& Client::getWebhookWithToken(snowflake_t webhook_id,
+		const QString& token)
+{
+	QString endpoint = QString("/webhooks/%1/%2").arg(webhook_id).arg(token);
+	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Promise<Webhook>* promise = new Promise<Webhook>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject webhook_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Webhook webhook(webhook_object);
+
+		promise->resolve(webhook);
+	});
+
+	return (*promise);
+}
+
 void Client::deleteChannel(snowflake_t channel_id)
 {
 	QString endpoint = QString("/channels/%1").arg(channel_id);
@@ -828,6 +919,20 @@ void Client::deleteInvite(const QString& invite_code)
 void Client::leaveGuild(snowflake_t guild_id)
 {
 	QString endpoint = QString("/users/@me/guilds/%1").arg(guild_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteWebhook(snowflake_t webhook_id)
+{
+	QString endpoint = QString("/webhooks/%1").arg(webhook_id);
+
+	http_service_.del(token_, endpoint);
+}
+
+void Client::deleteWebhook(snowflake_t webhook_id, const QString& token)
+{
+	QString endpoint = QString("/webhooks/%1/%2").arg(webhook_id).arg(token);
 
 	http_service_.del(token_, endpoint);
 }
@@ -1070,6 +1175,18 @@ void Client::createGroupDm(const QList<QString>& access_tokens,
 	http_service_.post(token_, endpoint, payload);
 }
 
+void Client::createWebhook(snowflake_t channel_id, const QString& name,
+		const QByteArray& avatar)
+{
+	QString endpoint = QString("/channels/%1/webhooks").arg(channel_id);
+	QJsonObject payload;
+
+	payload["name"] = name;
+	payload["avatar"] = QString(avatar);
+
+	http_service_.post(token_, endpoint, payload);
+}
+
 void Client::modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch)
 {
@@ -1219,6 +1336,22 @@ void Client::modifyCurrentUser(const UserPatch& user_patch)
 	QString endpoint("/users/@me");
 
 	http_service_.patch(token_, endpoint, user_patch);
+}
+
+void Client::modifyWebhook(snowflake_t webhook_id,
+		const WebhookPatch& webhook_patch)
+{
+	QString endpoint = QString("/webhooks/%1").arg(webhook_id);
+	
+	http_service_.patch(token_, endpoint, webhook_patch);
+}
+
+void Client::modifyWebhookWithToken(snowflake_t webhook_id,
+		const QString& token, const WebhookPatch& webhook_patch)
+{
+	QString endpoint = QString("/webhooks/%1/%2").arg(webhook_id).arg(token);
+
+	http_service_.patch(token_, endpoint, webhook_patch);
 }
 
 void Client::triggerTypingIndicator(snowflake_t channel_id)

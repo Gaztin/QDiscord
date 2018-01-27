@@ -41,6 +41,8 @@ class User;
 class UserPatch;
 class VoiceRegion;
 class VoiceState;
+class Webhook;
+class WebhookPatch;
 
 class Client : public QObject
 {
@@ -79,6 +81,11 @@ public:
 	Promise<QList<Channel>>& getUserDms();
 	Promise<QList<Connection>>& getUserConnections();
 	Promise<QList<VoiceRegion>>& listVoiceRegions();
+	Promise<QList<Webhook>>& getChannelWebhooks(snowflake_t channel_id);
+	Promise<QList<Webhook>>& getGuildWebhooks(snowflake_t guild_id);
+	Promise<Webhook>& getWebhook(snowflake_t webhook_id);
+	Promise<Webhook>& getWebhookWithToken(snowflake_t webhook_id,
+		const QString& token);
 
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -106,6 +113,8 @@ public:
 		snowflake_t integration_id);
 	void deleteInvite(const QString& invite_code);
 	void leaveGuild(snowflake_t guild_id);
+	void deleteWebhook(snowflake_t webhook_id);
+	void deleteWebhook(snowflake_t webhook_id, const QString& token);
 
 	void createMessage(snowflake_t channel_id, const QString& content);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
@@ -141,6 +150,8 @@ public:
 	void createDm(snowflake_t recipient_id);
 	void createGroupDm(const QList<QString>& access_tokens,
 		const QList<QPair<snowflake_t, QString>>& nicks);
+	void createWebhook(snowflake_t channel_id, const QString& name,
+		const QByteArray& avatar);
 
 	void modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
@@ -167,6 +178,10 @@ public:
 	void modifyGuildEmbed(snowflake_t guild_id,
 		const GuildEmbedPatch& guild_embed_patch);
 	void modifyCurrentUser(const UserPatch& user_patch);
+	void modifyWebhook(snowflake_t webhook_id,
+		const WebhookPatch& webhook_patch);
+	void modifyWebhookWithToken(snowflake_t webhook_id, const QString& token,
+		const WebhookPatch& webhook_patch);
 
 	void triggerTypingIndicator(snowflake_t channel_id);
 
