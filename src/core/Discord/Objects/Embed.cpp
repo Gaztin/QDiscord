@@ -54,7 +54,7 @@ EmbedField::EmbedField(const QJsonObject& data)
 }
 
 Embed::Embed(const QJsonObject& data)
-	: timestamp_(QDateTime::fromString(data["timestamps"].toString(),
+	: timestamp_(QDateTime::fromString(data["timestamp"].toString(),
 		Qt::ISODate))
 	, title_(data["title"].toString())
 	, type_(data["type"].toString())
