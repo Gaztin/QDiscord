@@ -12,8 +12,6 @@ class Role
 public:
 	explicit Role(const QJsonObject& data);
 
-	operator QJsonObject() const;
-
 	const QString& name() const { return name_; }
 	
 	snowflake_t id() const { return id_; }
@@ -25,6 +23,8 @@ public:
 	bool hoist() const { return hoist_; }
 	bool managed() const { return managed_; }
 	bool mentionable() const { return mentionable_; }
+
+	operator QJsonObject() const;
 
 private:
 	QString name_;
