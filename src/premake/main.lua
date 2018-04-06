@@ -46,22 +46,23 @@ project ('QDiscordCore')
 
 	filter {}
 
-project ('Demo')
+group ('Demos')
+project ('BotDemo01')
 	premake.extensions.qt.enable()
 	dependson ('QDiscordCore')
-	location ('../projects/')
+	location ('../projects/demos/')
 	kind ('ConsoleApp')
-	qtgenerateddir ('../demo/GeneratedFiles/')
+	qtgenerateddir ('../demos/botdemo01/GeneratedFiles/')
 	qtprefix ('Qt5')
 	files {
-		'../demo/**.h',
-		'../demo/**.cpp',
-		'../demo/**.ui',
-		'../demo/**.qrc',
+		'../demos/botdemo01/**.h',
+		'../demos/botdemo01/**.cpp',
+		'../demos/botdemo01/**.ui',
+		'../demos/botdemo01/**.qrc',
 	}
 	includedirs {
 		'../core/',
-		'../demo/',
+		'../demos/botdemo01/',
 	}
 	links {
 		'QDiscordCore',
