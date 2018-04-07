@@ -54,10 +54,7 @@ MainWindow::MainWindow(QWidget* parent)
 		{
 			Q_FOREACH(const Discord::Message& m, ms)
 			{
-				QListWidgetItem* item = new QListWidgetItem;
-				item->setData(Qt::UserRole, m.id());
-				item->setText(m.author().username() + ": " + m.content());
-				ui_.list_widget_messages->addItem(item);
+				discord_client_.handleNewMessage(m);
 			}
 		});
 	});

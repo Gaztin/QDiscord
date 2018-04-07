@@ -8,6 +8,8 @@ class BotUserClient : public Discord::Client
 public:
 	BotUserClient(Ui_MainWindow& window_layout, QObject* parent = nullptr);
 
+	void handleNewMessage(const Discord::Message& message);
+
 protected:
 	virtual void onReady(const Discord::User& user,
 		const QList<Discord::Channel>& private_channels,

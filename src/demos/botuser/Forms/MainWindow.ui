@@ -55,7 +55,14 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QListWidget" name="list_widget_messages"/>
+        <widget class="QListWidget" name="list_widget_messages">
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLineEdit" name="line_edit_message">
