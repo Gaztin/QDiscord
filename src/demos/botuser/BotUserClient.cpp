@@ -21,19 +21,19 @@ void BotUserClient::onReady(const Discord::User& user,
 		getGuild(_g.id()).then(
 			[&](const Discord::Guild& g)
 		{
-				QListWidgetItem* item = new QListWidgetItem;
-				window_layout_ref_.list_widget->addItem(item);
+			QListWidgetItem* item = new QListWidgetItem;
+			window_layout_ref_.list_widget->addItem(item);
 
-				getGuildIconPixmap(g,
-					Discord::Client::IconImageSupportedExtension::PNG).then(
-					[item](const QPixmap& p)
-				{
-					QSize icon_size = item->listWidget()->iconSize().expandedTo(
-						p.size());
+			getGuildIconPixmap(g,
+				Discord::Client::IconImageSupportedExtension::PNG).then(
+				[item](const QPixmap& p)
+			{
+				QSize icon_size = item->listWidget()->iconSize().expandedTo(
+					p.size());
 
-					item->setIcon(p);
-					item->listWidget()->setIconSize(icon_size);
-				});
+				item->setIcon(p);
+				item->listWidget()->setIconSize(icon_size);
+			});
 		});
 	}
 }
