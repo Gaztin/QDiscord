@@ -22,6 +22,7 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtGui/QPixmap>
 #include <QtNetwork/QNetworkReply>
 
 QDISCORD_NAMESPACE_BEGIN
@@ -752,6 +753,42 @@ Promise<Webhook>& Client::getWebhookWithToken(snowflake_t webhook_id,
 		Webhook webhook(webhook_object);
 
 		promise->resolve(webhook);
+	});
+
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getGuildIconPixmap(const Guild& guild, IconImageSupportedExtension extension)
+{
+	QString endpoint = QString("icons/%1/%2").arg(guild.id()).arg(guild.icon());
+	switch (extension)
+	{
+		default:
+		case IconImageSupportedExtension::PNG:
+			endpoint += ".png";
+			break;
+
+		case IconImageSupportedExtension::JPEG:
+			endpoint += ".jpg";
+			break;
+
+		case IconImageSupportedExtension::WEBP:
+			endpoint += ".webp";
+	}
+
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished, [reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QByteArray bytes = reply->readAll();
+		QPixmap pixmap;
+		pixmap.loadFromData(bytes);
+
+		promise->resolve(pixmap);
 	});
 
 	return (*promise);

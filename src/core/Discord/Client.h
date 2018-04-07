@@ -87,6 +87,10 @@ public:
 	Promise<Webhook>& getWebhookWithToken(snowflake_t webhook_id,
 		const QString& token);
 
+	enum class IconImageSupportedExtension { PNG, JPEG, WEBP };
+
+	Promise<QPixmap>& getGuildIconPixmap(const Guild& guild,
+		IconImageSupportedExtension extension);
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
