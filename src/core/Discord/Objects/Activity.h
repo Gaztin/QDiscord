@@ -19,6 +19,9 @@ class ActivityTimestamps
 public:
 	explicit ActivityTimestamps(const QJsonObject& data);
 
+	int start() const { return start_; }
+	int end() const { return end_; }
+
 private:
 	int start_;
 	int end_;
@@ -28,6 +31,11 @@ class ActivityParty
 {
 public:
 	explicit ActivityParty(const QJsonObject& data);
+
+	const QString& id() const { return id_; }
+
+	int currentSize() const { return current_size_; }
+	int maxSize() const { return max_size_; }
 
 private:
 	QString id_;
@@ -40,6 +48,11 @@ class ActivityAssets
 {
 public:
 	explicit ActivityAssets(const QJsonObject& data);
+
+	const QString& largeImage() const { return large_image_; }
+	const QString& largeText() const { return large_text_; }
+	const QString& smallImage() const { return small_image_; }
+	const QString& smallText() const { return small_text_; }
 
 private:
 	QString large_image_;
