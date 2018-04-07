@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+  <widget class="QWidget" name="central_widget">
+   <layout class="QHBoxLayout" name="central_widget_layout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -34,7 +34,41 @@
      <widget class="QListWidget" name="list_widget_channels"/>
     </item>
     <item>
-     <widget class="QListWidget" name="list_widget_messages"/>
+     <widget class="QWidget" name="widget_messages" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="messages_widget_layout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QListWidget" name="list_widget_messages"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="line_edit_message">
+         <property name="maxLength">
+          <number>2000</number>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item>
      <widget class="QWidget" name="content_widget" native="true"/>

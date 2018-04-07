@@ -44,22 +44,36 @@ MainWindow::MainWindow(QWidget* parent)
 
 		QList<QListWidgetItem*> selected_items =
 			ui_.list_widget_channels->selectedItems();
-		if (selected_items.length() == 1)
+		if (selected_items.length() != 1)
+			return;
+
+		snowflake_t channel_id = selected_items[0]->data(
+			Qt::UserRole).toULongLong();
+		discord_client_.getChannelMessages(channel_id).then(
+			[this](const QList<Discord::Message>& ms)
 		{
-			snowflake_t channel_id = selected_items[0]->data(
-				Qt::UserRole).toULongLong();
-			discord_client_.getChannelMessages(channel_id).then(
-				[this](const QList<Discord::Message>& ms)
+			Q_FOREACH(const Discord::Message& m, ms)
 			{
-				Q_FOREACH(const Discord::Message& m, ms)
-				{
-					QListWidgetItem* item = new QListWidgetItem;
-					item->setData(Qt::UserRole, m.id());
-					item->setText(m.author().username() + ": " + m.content());
-					ui_.list_widget_messages->addItem(item);
-				}
-			});
-		}
+				QListWidgetItem* item = new QListWidgetItem;
+				item->setData(Qt::UserRole, m.id());
+				item->setText(m.author().username() + ": " + m.content());
+				ui_.list_widget_messages->addItem(item);
+			}
+		});
+	});
+
+	connect(ui_.line_edit_message, &QLineEdit::returnPressed,
+		[this]
+	{
+		QList<QListWidgetItem*> selected_channel_items =
+			ui_.list_widget_channels->selectedItems();
+		if (selected_channel_items.length() != 1)
+			return;
+
+		snowflake_t channel_id = selected_channel_items[0]->data(
+			Qt::UserRole).toULongLong();
+		discord_client_.createMessage(channel_id, ui_.line_edit_message->text());
+		ui_.line_edit_message->clear();
 	});
 }
 
