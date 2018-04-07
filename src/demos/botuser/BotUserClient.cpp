@@ -23,19 +23,15 @@ void BotUserClient::onReady(const Discord::User& user,
 		{
 				QListWidgetItem* item = new QListWidgetItem;
 				window_layout_ref_.list_widget->addItem(item);
-#ifdef QT_DEBUG
-				qDebug("Guild: %s\n", qPrintable(g.name()));
-#endif
+
 				getGuildIconPixmap(g,
 					Discord::Client::IconImageSupportedExtension::PNG).then(
 					[item](const QPixmap& p)
 				{
+					QSize icon_size = item->listWidget()->iconSize().expandedTo(
+						p.size());
+
 					item->setIcon(p);
-#ifdef QT_DEBUG
-					qDebug("  Icon size: %d x %d\n", p.width(), p.height());
-#endif
-					QSize icon_size = p.size().expandedTo(
-						item->listWidget()->iconSize());
 					item->listWidget()->setIconSize(icon_size);
 				});
 		});
