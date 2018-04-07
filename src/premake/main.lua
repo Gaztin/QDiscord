@@ -24,6 +24,9 @@ project ('QDiscordCore')
 		'../core/**.h',
 		'../core/**.cpp',
 	}
+	flags {
+		"MultiProcessorCompile",
+	}
 	includedirs {
 		'../core/',
 	}
