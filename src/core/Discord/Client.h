@@ -87,10 +87,22 @@ public:
 	Promise<Webhook>& getWebhookWithToken(snowflake_t webhook_id,
 		const QString& token);
 
+	enum class EmojiImageSupportedExtension { PNG, GIF };
 	enum class IconImageSupportedExtension { PNG, JPEG, WEBP };
+	enum class AvatarImageSupportedExtension { PNG, JPEG, WEBP, GIF };
 
+	Promise<QPixmap>& getCustomEmojiPixmap(const Emoji& emoji,
+		EmojiImageSupportedExtension extension);
 	Promise<QPixmap>& getGuildIconPixmap(const Guild& guild,
 		IconImageSupportedExtension extension);
+	Promise<QPixmap>& getGuildSplashPixmap(const Guild& guild,
+		IconImageSupportedExtension extension);
+	Promise<QPixmap>& getDefaultUserAvatarPixmap(uint32_t discriminator);
+	Promise<QPixmap>& getUserAvatarPixmap(const User& user,
+		AvatarImageSupportedExtension extension);
+	Promise<QPixmap>& getApplicationIconPixmap(const Activity& activity,
+		IconImageSupportedExtension extension, bool large);
+
 	void deleteChannel(snowflake_t channel_id);
 	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);

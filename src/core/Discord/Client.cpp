@@ -758,7 +758,40 @@ Promise<Webhook>& Client::getWebhookWithToken(snowflake_t webhook_id,
 	return (*promise);
 }
 
-Promise<QPixmap>& Client::getGuildIconPixmap(const Guild& guild, IconImageSupportedExtension extension)
+Promise<QPixmap>& Client::getCustomEmojiPixmap(const Emoji& emoji,
+		EmojiImageSupportedExtension extension)
+{
+	QString endpoint = QString("emojis/%1").arg(emoji.id());
+	switch (extension)
+	{
+		default:
+		case EmojiImageSupportedExtension::PNG:
+			endpoint += ".png";
+			break;
+
+		case EmojiImageSupportedExtension::GIF:
+			endpoint += ".gif";
+	}
+
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QPixmap pixmap;
+		pixmap.loadFromData(reply->readAll());
+		promise->resolve(pixmap);
+	});
+
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getGuildIconPixmap(const Guild& guild,
+		IconImageSupportedExtension extension)
 {
 	QString endpoint = QString("icons/%1/%2").arg(guild.id()).arg(guild.icon());
 	switch (extension)
@@ -779,15 +812,150 @@ Promise<QPixmap>& Client::getGuildIconPixmap(const Guild& guild, IconImageSuppor
 	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
 	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
 
-	connect(reply, &QNetworkReply::finished, [reply, promise]
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
 	{
 		if (reply->error() != QNetworkReply::NoError)
 			return promise->reject();
 
-		QByteArray bytes = reply->readAll();
 		QPixmap pixmap;
-		pixmap.loadFromData(bytes);
+		pixmap.loadFromData(reply->readAll());
+		promise->resolve(pixmap);
+	});
 
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getGuildSplashPixmap(const Guild& guild,
+		IconImageSupportedExtension extension)
+{
+	QString endpoint = QString("splashes/%1/%2").arg(guild.id()).arg(
+		guild.splash());
+	switch (extension)
+	{
+		default:
+		case IconImageSupportedExtension::PNG:
+			endpoint += ".png";
+			break;
+
+		case IconImageSupportedExtension::JPEG:
+			endpoint += ".jpg";
+			break;
+
+		case IconImageSupportedExtension::WEBP:
+			endpoint += ".webp";
+	}
+
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QPixmap pixmap;
+		pixmap.loadFromData(reply->readAll());
+		promise->resolve(pixmap);
+	});
+
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getDefaultUserAvatarPixmap(uint32_t discriminator)
+{
+	QString endpoint = QString("embed/avatars/%1.png").arg(discriminator);
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QPixmap pixmap;
+		pixmap.loadFromData(reply->readAll());
+		promise->resolve(pixmap);
+	});
+
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getUserAvatarPixmap(const User& user,
+		AvatarImageSupportedExtension extension)
+{
+	QString endpoint = QString("avatars/%1/%2").arg(user.id()).arg(
+		user.avatar());
+	switch (extension)
+	{
+		default:
+		case AvatarImageSupportedExtension::PNG:
+			endpoint += ".png";
+			break;
+
+		case AvatarImageSupportedExtension::JPEG:
+			endpoint += ".jpg";
+			break;
+
+		case AvatarImageSupportedExtension::WEBP:
+			endpoint += ".webp";
+			break;
+
+		case AvatarImageSupportedExtension::GIF:
+			endpoint += ".gif";
+	}
+
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QPixmap pixmap;
+		pixmap.loadFromData(reply->readAll());
+		promise->resolve(pixmap);
+	});
+
+	return (*promise);
+}
+
+Promise<QPixmap>& Client::getApplicationIconPixmap(const Activity& activity,
+		IconImageSupportedExtension extension, bool large)
+{
+	QString endpoint = QString("app-icons/%1/%2").arg(
+		activity.applicationId()).arg(large ? activity.assets().largeImage() :
+		activity.assets().smallImage());
+	switch (extension)
+	{
+		default:
+		case IconImageSupportedExtension::PNG:
+			endpoint += ".png";
+			break;
+
+		case IconImageSupportedExtension::JPEG:
+			endpoint += ".jpg";
+			break;
+
+		case IconImageSupportedExtension::WEBP:
+			endpoint += ".webp";
+	}
+
+	QNetworkReply* reply = http_service_.getImage(token_, endpoint);
+	Promise<QPixmap>* promise = new Promise<QPixmap>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QPixmap pixmap;
+		pixmap.loadFromData(reply->readAll());
 		promise->resolve(pixmap);
 	});
 
