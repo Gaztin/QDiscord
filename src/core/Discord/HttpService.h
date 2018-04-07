@@ -25,6 +25,8 @@ public:
 	QNetworkReply* patch(const Token& token, const QString& endpoint,
 		const QJsonObject& payload);
 
+	QNetworkReply* getImage(const Token& token, const QString& endpoint);
+
 private slots:
 	void onReply(QNetworkReply* reply);
 

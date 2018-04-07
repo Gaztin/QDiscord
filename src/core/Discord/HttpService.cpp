@@ -51,6 +51,11 @@ QNetworkReply* HttpService::patch(const Token& token, const QString& endpoint,
 	return sendRequest("https://discordapp.com/api", "PATCH", token, endpoint, payload);
 }
 
+QNetworkReply* HttpService::getImage(const Token& token, const QString& endpoint)
+{
+	return sendRequest("https://cdn.discordapp.com/", "GET", token, endpoint, QJsonObject());
+}
+
 void HttpService::onReply(QNetworkReply* reply)
 {
 #ifdef QT_DEBUG
