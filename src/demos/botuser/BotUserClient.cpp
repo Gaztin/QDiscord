@@ -18,22 +18,27 @@ void BotUserClient::onReady(const Discord::User& user,
 {
 	Q_FOREACH(const Discord::Guild& _g, guilds)
 	{
-		getGuild(_g.id()).then([&](const Discord::Guild& g)
-			{
+		getGuild(_g.id()).then(
+			[&](const Discord::Guild& g)
+		{
 				QListWidgetItem* item = new QListWidgetItem;
-				QByteArray bytes = g.icon().toLocal8Bit();
-				QPixmap pixmap;
-				pixmap.loadFromData(QByteArray::fromBase64(bytes), "PNG");
-
-				item->setIcon(pixmap);
-
-#ifdef QT_DEBUG
-				qDebug("Guild : %s\n  Icon size: %d x %d\n", qPrintable(g.name()), pixmap.width(), pixmap.height());
-#endif
-
 				window_layout_ref_.list_widget->addItem(item);
-			}
-		);
+#ifdef QT_DEBUG
+				qDebug("Guild: %s\n", qPrintable(g.name()));
+#endif
+				getGuildIconPixmap(g,
+					Discord::Client::IconImageSupportedExtension::PNG).then(
+					[item](const QPixmap& p)
+				{
+					item->setIcon(p);
+#ifdef QT_DEBUG
+					qDebug("  Icon size: %d x %d\n", p.width(), p.height());
+#endif
+					QSize icon_size = p.size().expandedTo(
+						item->listWidget()->iconSize());
+					item->listWidget()->setIconSize(icon_size);
+				});
+		});
 	}
 }
 
