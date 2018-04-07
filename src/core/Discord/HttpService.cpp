@@ -19,36 +19,36 @@ HttpService::HttpService(const QString& user_agent, QObject* parent)
 
 QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
 {
-	return sendRequest("GET", token, endpoint, QJsonObject());
+	return sendRequest("https://discordapp.com/api", "GET", token, endpoint, QJsonObject());
 }
 
 QNetworkReply* HttpService::get(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("GET", token, endpoint, payload);
+	return sendRequest("https://discordapp.com/api", "GET", token, endpoint, payload);
 }
 
 QNetworkReply* HttpService::del(const Token& token, const QString& endpoint)
 {
-	return sendRequest("DELETE", token, endpoint, QJsonObject());
+	return sendRequest("https://discordapp.com/api", "DELETE", token, endpoint, QJsonObject());
 }
 
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("POST", token, endpoint, payload);
+	return sendRequest("https://discordapp.com/api", "POST", token, endpoint, payload);
 }
 
 QNetworkReply* HttpService::put(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("PUT", token, endpoint, payload);
+	return sendRequest("https://discordapp.com/api", "PUT", token, endpoint, payload);
 }
 
 QNetworkReply* HttpService::patch(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("PATCH", token, endpoint, payload);
+	return sendRequest("https://discordapp.com/api", "PATCH", token, endpoint, payload);
 }
 
 void HttpService::onReply(QNetworkReply* reply)
@@ -63,9 +63,9 @@ void HttpService::onReply(QNetworkReply* reply)
 	reply->deleteLater();
 }
 
-QNetworkReply* HttpService::sendRequest(const QByteArray& verb,
-		const Token& token, const QString& endpoint, const QJsonObject& payload,
-		const QString& base_url)
+QNetworkReply* HttpService::sendRequest(const QString& base_url,
+		const QByteArray& verb, const Token& token, const QString& endpoint,
+		const QJsonObject& payload)
 {
 	QNetworkRequest request(base_url + endpoint);
 	QByteArray data;
