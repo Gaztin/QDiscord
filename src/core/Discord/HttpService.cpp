@@ -64,10 +64,10 @@ void HttpService::onReply(QNetworkReply* reply)
 }
 
 QNetworkReply* HttpService::sendRequest(const QByteArray& verb,
-		const Token& token, const QString& endpoint,
-		const QJsonObject& payload)
+		const Token& token, const QString& endpoint, const QJsonObject& payload,
+		const QString& base_url)
 {
-	QNetworkRequest request("https://discordapp.com/api" + endpoint);
+	QNetworkRequest request(base_url + endpoint);
 	QByteArray data;
 
 	request.setRawHeader("Authorization", token.authorization());

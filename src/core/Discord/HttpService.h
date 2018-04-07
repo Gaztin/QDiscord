@@ -30,7 +30,8 @@ private slots:
 
 private:
 	QNetworkReply* sendRequest(const QByteArray& verb, const Token& token,
-		const QString& endpoint, const QJsonObject& payload);
+		const QString& endpoint, const QJsonObject& payload,
+		const QString& base_url = "https://discordapp.com/api");
 
 	QString user_agent_;
 	QNetworkAccessManager network_access_manager_;
