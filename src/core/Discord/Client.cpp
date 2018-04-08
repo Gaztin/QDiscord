@@ -1152,6 +1152,17 @@ void Client::createMessage(snowflake_t channel_id, const QString& content)
 	http_service_.post(token_, endpoint, payload);
 }
 
+void Client::createMessage(snowflake_t channel_id, const Embed& embed)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QJsonObject payload;
+
+	payload["content"] = QString();
+	payload["embed"] = QJsonObject(embed);
+
+	http_service_.post(token_, endpoint, payload);
+}
+
 void Client::createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji)
 {
