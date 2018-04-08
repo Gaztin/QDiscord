@@ -5,6 +5,20 @@
 
 QDISCORD_NAMESPACE_BEGIN
 
+/* EmbedFooter */
+
+EmbedFooter::EmbedFooter()
+{
+}
+
+EmbedFooter::EmbedFooter(const QString& text, const QString& icon_url,
+		const QString& proxy_icon_url)
+	: text_(text)
+	, icon_url_(icon_url)
+	, proxy_icon_url_(proxy_icon_url)
+{
+}
+
 EmbedFooter::EmbedFooter(const QJsonObject& data)
 	: text_(data["text"].toString())
 	, icon_url_(data["icon_url"].toString())
@@ -20,6 +34,23 @@ EmbedFooter::operator QJsonObject() const
 	data["proxy_icon_url"] = proxy_icon_url_;
 
 	return data;
+}
+
+/* EmbedImage */
+
+EmbedImage::EmbedImage()
+	: height_(0)
+	, width_(0)
+{
+}
+
+EmbedImage::EmbedImage(const QString& url, const QString& proxy_url, int height,
+		int width)
+	: url_(url)
+	, proxy_url_(proxy_url)
+	, height_(height)
+	, width_(width)
+{
 }
 
 EmbedImage::EmbedImage(const QJsonObject& data)
@@ -41,6 +72,21 @@ EmbedImage::operator QJsonObject() const
 	return data;
 }
 
+/* EmbedVideo */
+
+EmbedVideo::EmbedVideo()
+	: height_(0)
+	, width_(0)
+{
+}
+
+EmbedVideo::EmbedVideo(const QString& url, int height, int width)
+	: url_(url)
+	, height_(height)
+	, width_(width)
+{
+}
+
 EmbedVideo::EmbedVideo(const QJsonObject& data)
 	: url_(data["url"].toString())
 	, height_(data["height"].toInt())
@@ -58,6 +104,18 @@ EmbedVideo::operator QJsonObject() const
 	return data;
 }
 
+/* EmbedProvider */
+
+EmbedProvider::EmbedProvider()
+{
+}
+
+EmbedProvider::EmbedProvider(const QString& name, const QString& url)
+	: name_(name)
+	, url_(url)
+{
+}
+
 EmbedProvider::EmbedProvider(const QJsonObject& data)
 	: name_(data["name"].toString())
 	, url_(data["url"].toString())
@@ -71,6 +129,21 @@ EmbedProvider::operator QJsonObject() const
 	data["url"] = url_;
 
 	return data;
+}
+
+/* EmbedAuthor */
+
+EmbedAuthor::EmbedAuthor()
+{
+}
+
+EmbedAuthor::EmbedAuthor(const QString& name, const QString& url,
+		const QString& icon_url, const QString& proxy_icon_url)
+	: name_(name)
+	, url_(url)
+	, icon_url_(icon_url)
+	, proxy_icon_url_(proxy_icon_url)
+{
 }
 
 EmbedAuthor::EmbedAuthor(const QJsonObject& data)
@@ -92,6 +165,21 @@ EmbedAuthor::operator QJsonObject() const
 	return data;
 }
 
+/* EmbedField */
+
+EmbedField::EmbedField()
+	: display_inline_(false)
+{
+}
+
+EmbedField::EmbedField(const QString& name, const QString& value,
+		bool display_inline)
+	: name_(name)
+	, value_(value)
+	, display_inline_(display_inline)
+{
+}
+
 EmbedField::EmbedField(const QJsonObject& data)
 	: name_(data["name"].toString())
 	, value_(data["value"].toString())
@@ -107,6 +195,34 @@ EmbedField::operator QJsonObject() const
 	data["display_inline"] = display_inline_;
 
 	return data;
+}
+
+/* Embed */
+
+Embed::Embed()
+	: color_(0)
+{
+}
+
+Embed::Embed(const QList<EmbedField>& fields, const QDateTime& timestamp,
+		const QString& title, const QString& type, const QString& description,
+		const QString& url, const EmbedFooter& footer, const EmbedImage& image,
+		const EmbedImage& thumbnail, const EmbedVideo& video,
+		const EmbedProvider& provider, const EmbedAuthor& author, int color)
+	: fields_(fields)
+	, timestamp_(timestamp)
+	, title_(title)
+	, type_(type)
+	, description_(description)
+	, url_(url)
+	, footer_(footer)
+	, image_(image)
+	, thumbnail_(thumbnail)
+	, video_(video)
+	, provider_(provider)
+	, author_(author)
+	, color_(color)
+{
 }
 
 Embed::Embed(const QJsonObject& data)

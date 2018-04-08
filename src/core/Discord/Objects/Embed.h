@@ -12,7 +12,23 @@ QDISCORD_NAMESPACE_BEGIN
 class EmbedFooter
 {
 public:
+	EmbedFooter();
+	EmbedFooter(const QString& text, const QString& icon_url,
+		const QString& proxy_icon_url);
 	explicit EmbedFooter(const QJsonObject& data);
+
+	/* Setters */
+
+	void setText(const QString& text) { text_ = text; }
+	void setIconUrl(const QString& icon_url) { icon_url_ = icon_url; }
+	void setProxyIconUrl(const QString& proxy_icon_url) { proxy_icon_url_
+		= proxy_icon_url; }
+	
+	/* Getters */
+
+	const QString& text() const { return text_; }
+	const QString& iconUrl() const { return icon_url_; }
+	const QString& proxyIconUrl() const { return proxy_icon_url_; }
 
 	operator QJsonObject() const;
 
@@ -25,13 +41,33 @@ private:
 class EmbedImage
 {
 public:
+	EmbedImage();
+	EmbedImage(const QString& url, const QString& proxy_url, int height,
+		int width);
 	explicit EmbedImage(const QJsonObject& data);
+
+	/* Setters */
+
+	void setUrl(const QString& url) { url_ = url;}
+	void setProxy_url(const QString& proxy_url) { proxy_url_ = proxy_url;}
+
+	void setHeight(int height) { height_ = height;}
+	void setWidth(int width) { width_ = width;}
+
+	/* Getters */
+
+	const QString& url() const { return url_; }
+	const QString& proxyUrl() const { return proxy_url_; }
+
+	int height() const { return height_; }
+	int width() const { return width_; }
 
 	operator QJsonObject() const;
 
 private:
 	QString url_;
 	QString proxy_url_;
+
 	int height_;
 	int width_;
 };
@@ -39,12 +75,29 @@ private:
 class EmbedVideo
 {
 public:
+	EmbedVideo();
+	EmbedVideo(const QString& url, int height, int width);
 	explicit EmbedVideo(const QJsonObject& data);
+
+	/* Setters */
+
+	void setUrl(const QString& url) { url_ = url; }
+
+	void setHeight(int height) { height_ = height; }
+	void setWidth(int width) { width_ = width; }
+
+	/* Getters */
+
+	const QString& url() const { return url_; }
+
+	int height() const { return height_; }
+	int width() const { return width_; }
 
 	operator QJsonObject() const;
 
 private:
 	QString url_;
+
 	int height_;
 	int width_;
 };
@@ -52,7 +105,19 @@ private:
 class EmbedProvider
 {
 public:
+	EmbedProvider();
+	EmbedProvider(const QString& name, const QString& url);
 	explicit EmbedProvider(const QJsonObject& data);
+
+	/* Setters */
+
+	void setName(const QString& name) { name_ = name; }
+	void setUrl(const QString& url) { url_ = url; }
+
+	/* Getters */
+
+	const QString& name() const { return name_; }
+	const QString& url() const { return url_; }
 
 	operator QJsonObject() const;
 
@@ -64,7 +129,25 @@ private:
 class EmbedAuthor
 {
 public:
+	EmbedAuthor();
+	EmbedAuthor(const QString& name, const QString& url,
+		const QString& icon_url, const QString& proxy_icon_url);
 	explicit EmbedAuthor(const QJsonObject& data);
+
+	/* Setters */
+
+	void setName(const QString& name) { name_ = name; }
+	void setUrl(const QString& url) { url_ = url; }
+	void setIconUrl(const QString& icon_url) { icon_url_ = icon_url; }
+	void setProxyIconUrl(const QString& proxy_icon_url) { proxy_icon_url_
+		= proxy_icon_url; }
+
+	/* Getters */
+
+	const QString& name() const { return name_; }
+	const QString& url() const { return url_; }
+	const QString& iconUrl() const { return icon_url_; }
+	const QString& proxyIconUrl() const { return proxy_icon_url_; }
 
 	operator QJsonObject() const;
 
@@ -78,20 +161,66 @@ private:
 class EmbedField
 {
 public:
+	EmbedField();
+	EmbedField(const QString& name, const QString& value, bool display_inline);
 	explicit EmbedField(const QJsonObject& data);
+
+	/* Setters */
+
+	void setName(const QString& name) { name_ = name; }
+	void setValue(const QString& value) { value_ = value; }
+
+	void setDisplayInline(bool display_inline) { display_inline_
+		= display_inline; }
+
+	/* Getters */
+
+	const QString& name() const { return name_; }
+	const QString& value() const { return value_; }
+
+	bool displayInline() const { return display_inline_; }
 
 	operator QJsonObject() const;
 
 private:
 	QString name_;
 	QString value_;
+
 	bool display_inline_;
 };
 
 class Embed
 {
 public:
+	Embed();
+	Embed(const QList<EmbedField>& fields, const QDateTime& timestamp,
+		const QString& title, const QString& type, const QString& description,
+		const QString& url, const EmbedFooter& footer, const EmbedImage& image,
+		const EmbedImage& thumbnail, const EmbedVideo& video,
+		const EmbedProvider& provider, const EmbedAuthor& author, int color);
 	explicit Embed(const QJsonObject& data);
+
+	/* Setters */
+	
+	void setFields(const QList<EmbedField>& fields) { fields_ = fields; }
+
+	void setTimestamp(const QDateTime& timestamp) { timestamp_ = timestamp; }
+	void setTitle(const QString& title) { title_ = title; }
+	void setType(const QString& type) { type_ = type; }
+	void setDescription(const QString& description) { description_
+		= description; }
+	void setUrl(const QString& url) { url_ = url; }
+
+	void setFooter(const EmbedFooter& footer) { footer_ = footer; }
+	void setImage(const EmbedImage& image) { image_ = image; }
+	void setThumbnail(const EmbedImage& thumbnail) { thumbnail_ = thumbnail; }
+	void setVideo(const EmbedVideo& video) { video_ = video; }
+	void setProvider(const EmbedProvider& provider) { provider_ = provider; }
+	void setAuthor(const EmbedAuthor& author) { author_ = author; }
+
+	void setColor(int color) { color_ = color; }
+
+	/* Getters */
 
 	const QList<EmbedField>& fields() const { return fields_; }
 	
@@ -107,7 +236,7 @@ public:
 	const EmbedVideo& video() const { return video_; }
 	const EmbedProvider& provider() const { return provider_; }
 	const EmbedAuthor& author() const { return author_; }
-	
+
 	int color() const { return color_; }
 
 	operator QJsonObject() const;
