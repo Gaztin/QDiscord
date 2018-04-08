@@ -11,11 +11,9 @@ EmbedFooter::EmbedFooter()
 {
 }
 
-EmbedFooter::EmbedFooter(const QString& text, const QString& icon_url,
-		const QString& proxy_icon_url)
+EmbedFooter::EmbedFooter(const QString& text, const QString& icon_url)
 	: text_(text)
 	, icon_url_(icon_url)
-	, proxy_icon_url_(proxy_icon_url)
 {
 }
 
@@ -44,12 +42,10 @@ EmbedImage::EmbedImage()
 {
 }
 
-EmbedImage::EmbedImage(const QString& url, const QString& proxy_url, int height,
-		int width)
+EmbedImage::EmbedImage(const QString& url)
 	: url_(url)
-	, proxy_url_(proxy_url)
-	, height_(height)
-	, width_(width)
+	, height_(0)
+	, width_(0)
 {
 }
 
@@ -80,10 +76,10 @@ EmbedVideo::EmbedVideo()
 {
 }
 
-EmbedVideo::EmbedVideo(const QString& url, int height, int width)
+EmbedVideo::EmbedVideo(const QString& url)
 	: url_(url)
-	, height_(height)
-	, width_(width)
+	, height_(0)
+	, width_(0)
 {
 }
 
@@ -138,11 +134,10 @@ EmbedAuthor::EmbedAuthor()
 }
 
 EmbedAuthor::EmbedAuthor(const QString& name, const QString& url,
-		const QString& icon_url, const QString& proxy_icon_url)
+		const QString& icon_url)
 	: name_(name)
 	, url_(url)
 	, icon_url_(icon_url)
-	, proxy_icon_url_(proxy_icon_url)
 {
 }
 
@@ -205,21 +200,17 @@ Embed::Embed()
 }
 
 Embed::Embed(const QList<EmbedField>& fields, const QDateTime& timestamp,
-		const QString& title, const QString& type, const QString& description,
-		const QString& url, const EmbedFooter& footer, const EmbedImage& image,
-		const EmbedImage& thumbnail, const EmbedVideo& video,
-		const EmbedProvider& provider, const EmbedAuthor& author, int color)
+		const QString& title, const QString& description, const QString& url,
+		const EmbedFooter& footer, const EmbedImage& image,
+		const EmbedImage& thumbnail, const EmbedAuthor& author, int color)
 	: fields_(fields)
 	, timestamp_(timestamp)
 	, title_(title)
-	, type_(type)
 	, description_(description)
 	, url_(url)
 	, footer_(footer)
 	, image_(image)
 	, thumbnail_(thumbnail)
-	, video_(video)
-	, provider_(provider)
 	, author_(author)
 	, color_(color)
 {

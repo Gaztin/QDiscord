@@ -13,8 +13,7 @@ class EmbedFooter
 {
 public:
 	EmbedFooter();
-	EmbedFooter(const QString& text, const QString& icon_url,
-		const QString& proxy_icon_url);
+	EmbedFooter(const QString& text, const QString& icon_url);
 	explicit EmbedFooter(const QJsonObject& data);
 
 	/* Setters */
@@ -42,8 +41,7 @@ class EmbedImage
 {
 public:
 	EmbedImage();
-	EmbedImage(const QString& url, const QString& proxy_url, int height,
-		int width);
+	EmbedImage(const QString& url);
 	explicit EmbedImage(const QJsonObject& data);
 
 	/* Setters */
@@ -76,7 +74,7 @@ class EmbedVideo
 {
 public:
 	EmbedVideo();
-	EmbedVideo(const QString& url, int height, int width);
+	EmbedVideo(const QString& url);
 	explicit EmbedVideo(const QJsonObject& data);
 
 	/* Setters */
@@ -131,7 +129,7 @@ class EmbedAuthor
 public:
 	EmbedAuthor();
 	EmbedAuthor(const QString& name, const QString& url,
-		const QString& icon_url, const QString& proxy_icon_url);
+		const QString& icon_url);
 	explicit EmbedAuthor(const QJsonObject& data);
 
 	/* Setters */
@@ -194,10 +192,9 @@ class Embed
 public:
 	Embed();
 	Embed(const QList<EmbedField>& fields, const QDateTime& timestamp,
-		const QString& title, const QString& type, const QString& description,
-		const QString& url, const EmbedFooter& footer, const EmbedImage& image,
-		const EmbedImage& thumbnail, const EmbedVideo& video,
-		const EmbedProvider& provider, const EmbedAuthor& author, int color);
+		const QString& title, const QString& description, const QString& url,
+		const EmbedFooter& footer, const EmbedImage& image,
+		const EmbedImage& thumbnail, const EmbedAuthor& author, int color);
 	explicit Embed(const QJsonObject& data);
 
 	/* Setters */
