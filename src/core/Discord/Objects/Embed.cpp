@@ -248,7 +248,7 @@ Embed::operator QJsonObject() const
 	data["url"] = url_;
 	data["footer"] = QJsonObject(footer_);
 	data["image"] = QJsonObject(image_);
-	data["thumbnail"] = QJsonObject(image_);
+	data["thumbnail"] = QJsonObject(thumbnail_);
 	data["video"] = QJsonObject(video_);
 	data["provider"] = QJsonObject(provider_);
 	data["author"] = QJsonObject(author_);
