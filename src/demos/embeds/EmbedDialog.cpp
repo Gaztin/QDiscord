@@ -45,11 +45,20 @@ snowflake_t EmbedDialog::channelId() const
 Discord::Embed EmbedDialog::embed() const
 {
 	Discord::Embed e;
+	e.setTitle(ui_.text_edit_title->toPlainText());
 	e.setDescription(ui_.text_edit_description->toPlainText());
 
 	Discord::EmbedFooter footer;
 	footer.setText(ui_.text_edit_footer->toPlainText());
 	e.setFooter(footer);
+
+	Discord::EmbedImage image;
+	image.setUrl(ui_.line_edit_image->text());
+	e.setImage(image);
+
+	Discord::EmbedImage thumbnail;
+	thumbnail.setUrl(ui_.line_edit_thumbnail->text());
+	e.setThumbnail(thumbnail);
 
 	return e;
 }
