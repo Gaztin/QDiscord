@@ -154,4 +154,54 @@ group ('Demos')
 			qtpath (qtdir_x64)
 			targetdir ('../../bin/x64/')
 
-	filter {}
+	project ('Embeds')
+		premake.extensions.qt.enable()
+		dependson ('QDiscordCore')
+		location ('../projects/demos/')
+		kind ('ConsoleApp')
+		qtgenerateddir ('../demos/embeds/GeneratedFiles/')
+		qtprefix ('Qt5')
+		files {
+			'../demos/embeds/**.h',
+			'../demos/embeds/**.cpp',
+			'../demos/embeds/**.ui',
+			'../demos/embeds/**.qrc',
+		}
+		flags {
+			"MultiProcessorCompile",
+		}
+		includedirs {
+			'../core/',
+			'../demos/embeds/',
+		}
+		links {
+			'QDiscordCore',
+		}
+		qtmodules {
+			'core',
+			'gui',
+			'network',
+			'websockets',
+			'widgets',
+		}
+	
+		filter {'configurations:Debug'}
+			qtsuffix ('d')
+	
+		filter {'configurations:Release'}
+			optimize ('Full')
+			defines {
+				'QT_NO_DEBUG',
+			}
+	
+		filter {'platforms:x86'}
+			debugdir ('../../bin/x86/')
+			objdir ('../../bin/x86/obj/')
+			qtpath (qtdir_x86)
+			targetdir ('../../bin/x86/')
+	
+		filter {'platforms:x64'}
+			debugdir ('../../bin/x64/')
+			objdir ('../../bin/x64/obj/')
+			qtpath (qtdir_x64)
+			targetdir ('../../bin/x64/')
