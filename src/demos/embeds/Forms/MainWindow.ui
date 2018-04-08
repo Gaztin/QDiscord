@@ -34,6 +34,7 @@
      <string>File</string>
     </property>
     <addaction name="action_log_in"/>
+    <addaction name="action_new_embed"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_help"/>
@@ -47,6 +48,11 @@
   <action name="action_log_in">
    <property name="text">
     <string>Log In</string>
+   </property>
+  </action>
+  <action name="action_new_embed">
+   <property name="text">
+    <string>New Embed</string>
    </property>
   </action>
  </widget>

@@ -8,6 +8,7 @@ public:
 	MainWindow(QWidget* parent = nullptr);
 
 	void logIn();
+	void newEmbed();
 
 private:
 	Ui_MainWindow ui_;
