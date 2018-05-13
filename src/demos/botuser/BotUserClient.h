@@ -8,13 +8,12 @@ class BotUserClient : public Discord::Client
 public:
 	BotUserClient(Ui_MainWindow& window_layout, QObject* parent = nullptr);
 
-	void handleNewMessage(const Discord::Message& message);
+	void handleMessage(const Discord::Message& message);
 
 protected:
-	virtual void onReady(const Discord::User& user,
+	void onConnected(const Discord::User& user,
 		const QList<Discord::Channel>& private_channels,
-		const QList<Discord::Guild>& guilds) override;
-	virtual void onMessageCreate(const Discord::Message& message) override;
+		const QList<Discord::Guild>& guilds);
 
 private:
 	Ui_MainWindow& window_layout_ref_;

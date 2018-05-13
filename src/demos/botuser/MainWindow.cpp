@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget* parent)
 		{
 			Q_FOREACH(const Discord::Message& m, ms)
 			{
-				discord_client_.handleNewMessage(m);
+				discord_client_.handleMessage(m);
 			}
 		});
 	});

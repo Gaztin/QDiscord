@@ -9,18 +9,10 @@
 TestBotClient::TestBotClient(QObject* parent)
 	: Discord::Client("test-bot")
 {
+	connect(this, &Client::onMessageCreate, this, &TestBotClient::handleMessage);
 }
 
-void TestBotClient::onReady(const Discord::User& user,
-		const QList<Discord::Channel>& private_channels,
-		const QList<Discord::Guild>& guilds)
-{
-#ifdef QT_DEBUG
-	qDebug("onReady()");
-#endif
-}
-
-void TestBotClient::onMessageCreate(const Discord::Message& message)
+void TestBotClient::handleMessage(const Discord::Message& message)
 {
 	if (message.content() == "!test")
 	{
