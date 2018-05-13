@@ -1600,7 +1600,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				guilds.append(Guild(guild_value.toObject()));
 			}
 
-			onReady(user, private_channels, guilds);
+			emit onReady(user, private_channels, guilds);
 
 			session_id_ = data["session_id"].toString();
 		}
@@ -1609,21 +1609,21 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		case EventId::CHANNEL_CREATE:
 		{
 			Channel new_channel(data);
-			onChannelCreate(new_channel);
+			emit onChannelCreate(new_channel);
 		}
 		break;
 
 		case EventId::CHANNEL_UPDATE:
 		{
 			Channel updated_channel(data);
-			onChannelUpdate(updated_channel);
+			emit onChannelUpdate(updated_channel);
 		}
 		break;
 
 		case EventId::CHANNEL_DELETE:
 		{
 			Channel deleted_channel(data);
-			onChannelDelete(deleted_channel);
+			emit onChannelDelete(deleted_channel);
 		}
 		break;
 
@@ -1633,21 +1633,21 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				data["channel_id"].toString().toULongLong();
 			QDateTime last_pin_timestamp = QDateTime::fromString(
 				data["joined_at"].toString(), Qt::ISODate);
-			onChannelPinsUpdate(channel_id, last_pin_timestamp);
+			emit onChannelPinsUpdate(channel_id, last_pin_timestamp);
 		}
 		break;
 
 		case EventId::GUILD_CREATE:
 		{
 			Guild guild(data);
-			onGuildCreate(guild);
+			emit onGuildCreate(guild);
 		}
 		break;
 
 		case EventId::GUILD_UPDATE:
 		{
 			Guild guild(data);
-			onGuildUpdate(guild);
+			emit onGuildUpdate(guild);
 		}
 		break;
 
@@ -1655,7 +1655,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			snowflake_t guild_id = data["id"].toString().toULongLong();
 			bool unavailable = data["unavailable"].toBool();
-			onGuildDelete(guild_id, unavailable);
+			emit onGuildDelete(guild_id, unavailable);
 		}
 		break;
 
@@ -1663,7 +1663,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			User banned_user(data);
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
-			onGuildBanAdd(banned_user, guild_id);
+			emit onGuildBanAdd(banned_user, guild_id);
 		}
 		break;
 
@@ -1671,7 +1671,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			User banned_user(data);
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
-			onGuildBanRemove(banned_user, guild_id);
+			emit onGuildBanRemove(banned_user, guild_id);
 		}
 		break;
 
@@ -1685,14 +1685,14 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				emojis.append(Emoji(emoji_value.toObject()));
 			}
 
-			onGuildEmojisUpdate(guild_id, emojis);
+			emit onGuildEmojisUpdate(guild_id, emojis);
 		}
 		break;
 
 		case EventId::GUILD_INTEGRATIONS_UPDATE:
 		{
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
-			onGuildIntegrationsUpdate(guild_id);
+			emit onGuildIntegrationsUpdate(guild_id);
 		}
 		break;
 
@@ -1700,7 +1700,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			GuildMember guild_member(data);
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
-			onGuildMemberAdd(guild_member, guild_id);
+			emit onGuildMemberAdd(guild_member, guild_id);
 		}
 		break;
 
@@ -1708,7 +1708,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			User removed_user(data["user"].toObject());
-			onGuildMemberRemove(guild_id, removed_user);
+			emit onGuildMemberRemove(guild_id, removed_user);
 		}
 		break;
 
@@ -1724,7 +1724,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				roles.append(role_value.toString().toULongLong());
 			}
 
-			onGuildMemberUpdate(guild_id, roles, user, nick);
+			emit onGuildMemberUpdate(guild_id, roles, user, nick);
 		}
 		break;
 
@@ -1738,7 +1738,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				members.append(GuildMember(member_value.toObject()));
 			}
 
-			onGuildRoleCreate(guild_id, members);
+			emit onGuildRoleCreate(guild_id, members);
 		}
 		break;
 
@@ -1746,7 +1746,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			Role role(data["role"].toObject());
-			onGuildRoleUpdate(guild_id, role);
+			emit onGuildRoleUpdate(guild_id, role);
 		}
 		break;
 
@@ -1754,21 +1754,21 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			snowflake_t role_id = data["role_id"].toString().toULongLong();
-			onGuildRoleDelete(guild_id, role_id);
+			emit onGuildRoleDelete(guild_id, role_id);
 		}
 		break;
 
 		case EventId::MESSAGE_CREATE:
 		{
 			Message message(data);
-			onMessageCreate(message);
+			emit onMessageCreate(message);
 		}
 		break;
 
 		case EventId::MESSAGE_UPDATE:
 		{
 			Message message(data);
-			onMessageUpdate(message);
+			emit onMessageUpdate(message);
 		}
 		break;
 
@@ -1777,7 +1777,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			snowflake_t id = data["id"].toString().toULongLong();
 			snowflake_t channel_id =
 				data["channel_id"].toString().toULongLong();
-			onMessageDelete(id, channel_id);
+			emit onMessageDelete(id, channel_id);
 		}
 		break;
 
@@ -1792,7 +1792,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				ids.append(id_value.toString().toULongLong());
 			}
 
-			onMessageDeleteBulk(ids, channel_id);
+			emit onMessageDeleteBulk(ids, channel_id);
 		}
 		break;
 
@@ -1804,7 +1804,8 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			snowflake_t message_id =
 				data["message_id"].toString().toULongLong();
 			Emoji emoji(data["emoji"].toObject());
-			onMessageReactionAdd(user_id, channel_id, message_id, emoji);
+
+			emit onMessageReactionAdd(user_id, channel_id, message_id, emoji);
 		}
 		break;
 
@@ -1816,7 +1817,8 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			snowflake_t message_id =
 				data["message_id"].toString().toULongLong();
 			Emoji emoji(data["emoji"].toObject());
-			onMessageReactionRemove(user_id, channel_id, message_id, emoji);
+
+			emit onMessageReactionRemove(user_id, channel_id, message_id, emoji);
 		}
 		break;
 
@@ -1826,7 +1828,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				data["channel_id"].toString().toULongLong();
 			snowflake_t message_id =
 				data["message_id"].toString().toULongLong();
-			onMessageReactionRemoveAll(channel_id, message_id);
+			emit onMessageReactionRemoveAll(channel_id, message_id);
 		}
 		break;
 
@@ -1843,7 +1845,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				roles.append(role_value.toString().toULongLong());
 			}
 
-			onPresenceUpdate(user, roles, activity, guild_id, status);
+			emit onPresenceUpdate(user, roles, activity, guild_id, status);
 		}
 		break;
 
@@ -1852,21 +1854,21 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			snowflake_t channel_id = data["channel_id"].toString().toULongLong();
 			snowflake_t user_id = data["user_id"].toString().toULongLong();
 			int timestamp = data["timestamp"].toInt();
-			onTypingStart(channel_id, user_id, timestamp);
+			emit onTypingStart(channel_id, user_id, timestamp);
 		}
 		break;
 
 		case EventId::USER_UPDATE:
 		{
 			User user(data);
-			onUserUpdate(user);
+			emit onUserUpdate(user);
 		}
 		break;
 
 		case EventId::VOICE_STATE_UPDATE:
 		{
 			VoiceState voice_state(data);
-			onVoiceStateUpdate(voice_state);
+			emit onVoiceStateUpdate(voice_state);
 		}
 		break;
 
@@ -1875,7 +1877,7 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			QString token = data["token"].toString();
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			QString endpoint = data["endpoint"].toString();
-			onVoiceServerUpdate(token, guild_id, endpoint);
+			emit onVoiceServerUpdate(token, guild_id, endpoint);
 		}
 		break;
 
@@ -1884,12 +1886,12 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			snowflake_t channel_id =
 				data["channel_id"].toString().toULongLong();
-			onWebhooksUpdate(guild_id, channel_id);
+			emit onWebhooksUpdate(guild_id, channel_id);
 		}
 		break;
 
 		default:
-			onUnhandledEvent(name, data);
+			emit onUnhandledEvent(name, data);
 		break;
 	}
 }
