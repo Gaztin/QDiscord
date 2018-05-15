@@ -85,10 +85,21 @@ Promise<Channel>& Client::getChannel(snowflake_t channel_id)
 	return (*promise);
 }
 
-Promise<QList<Message>>& Client::getChannelMessages(snowflake_t channel_id)
+Promise<QList<Message>>& Client::getChannelMessages(snowflake_t channel_id,
+		snowflake_t around, snowflake_t before, snowflake_t after, int limit)
 {
-	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
-	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Url url(BaseUrl::API, QString("/channels/%1/messages").arg(channel_id));
+	if (around)
+		url.addQuery("around", around);
+	if (before)
+		url.addQuery("before", before);
+	if (after)
+		url.addQuery("after", after);
+	url.addQuery("limit", limit);
+
+	qDebug("Query: %s", qPrintable(url.url().query()));
+
+	QNetworkReply* reply = http_service_.get(token_, url);
 	Promise<QList<Message>>* promise = new Promise<QList<Message>>(reply);
 
 	connect(reply, &QNetworkReply::finished, [reply, promise]{
@@ -132,11 +143,21 @@ Promise<Message>& Client::getChannelMessage(snowflake_t channel_id,
 }
 
 Promise<QList<Reaction>>& Client::getReactions(snowflake_t channel_id,
-		snowflake_t message_id, const QString& emoji)
+		snowflake_t message_id, const QString& emoji, snowflake_t before,
+		snowflake_t after, int limit)
 {
-	QString endpoint = QString("/channels/%1/messages/%2/reactions/%3").arg(
-		channel_id).arg(message_id).arg(emoji);
-	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Url url(Discord::BaseUrl::API, QString(
+		"/channels/%1/messages/%2/reactions/%3").arg(channel_id).arg(
+			message_id).arg(emoji));
+	if (before)
+		url.addQuery("before", before);
+	if (after)
+		url.addQuery("after", after);
+	if (limit)
+		url.addQuery("limit", limit);
+	url.addQuery("limit", limit);
+
+	QNetworkReply* reply = http_service_.get(token_, url);
 	Promise<QList<Reaction>>* promise = new Promise<QList<Reaction>>(reply);
 
 	connect(reply, &QNetworkReply::finished, [reply, promise]{
@@ -318,10 +339,14 @@ Promise<GuildMember>& Client::getGuildMember(snowflake_t guild_id,
 	return (*promise);
 }
 
-Promise<QList<GuildMember>>& Client::listGuildMembers(snowflake_t guild_id)
+Promise<QList<GuildMember>>& Client::listGuildMembers(snowflake_t guild_id,
+		int limit, snowflake_t after)
 {
-	QString endpoint = QString("/guilds/%1/members").arg(guild_id);
-	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Url url(Discord::BaseUrl::API, QString("/guilds/%1/members").arg(guild_id));
+	url.addQuery("limit", limit);
+	url.addQuery("after", after);
+
+	QNetworkReply* reply = http_service_.get(token_, url);
 	Promise<QList<GuildMember>>* promise = new Promise<QList<GuildMember>>(
 		reply);
 
@@ -393,12 +418,10 @@ Promise<QList<Role>>& Client::getGuildRoles(snowflake_t guild_id)
 
 Promise<int>& Client::getGuildPruneCount(snowflake_t guild_id, int days)
 {
-	QString endpoint = QString("/guilds/%1/prune").arg(guild_id);
-	QJsonObject payload;
+	Url url(Discord::BaseUrl::API, QString("/guilds/%1/prune").arg(guild_id));
+	url.addQuery("days", days);
 
-	payload["days"] = days;
-
-	QNetworkReply* reply = http_service_.get(token_, endpoint, payload);
+	QNetworkReply* reply = http_service_.get(token_, url);
 	Promise<int>* promise = new Promise<int>(reply);
 
 	connect(reply, &QNetworkReply::finished, [reply, promise]{
@@ -571,10 +594,17 @@ Promise<User>& Client::getUser(snowflake_t user_id)
 	return (*promise);
 }
 
-Promise<QList<Guild>>& Client::getCurrentUserGuilds()
+Promise<QList<Guild>>& Client::getCurrentUserGuilds(snowflake_t before,
+		snowflake_t after, int limit)
 {
-	QString endpoint("/users/@me/guilds");
-	QNetworkReply* reply = http_service_.get(token_, endpoint);
+	Url url(Discord::BaseUrl::API, "/users/@me/guilds");
+	if (before)
+		url.addQuery("before", before);
+	if (after)
+		url.addQuery("after", after);
+	url.addQuery("limit", limit);
+
+	QNetworkReply* reply = http_service_.get(token_, url);
 	Promise<QList<Guild>>* promise = new Promise<QList<Guild>>(reply);
 
 	connect(reply, &QNetworkReply::finished, [reply, promise]{
@@ -1097,12 +1127,10 @@ void Client::deleteGuildRole(snowflake_t guild_id, snowflake_t role_id)
 
 void Client::beginGuildPrune(snowflake_t guild_id, int days)
 {
-	QString endpoint = QString("/guilds/%1/prune").arg(guild_id);
-	QJsonObject payload;
+	Url url(Discord::BaseUrl::API, QString("/guilds/%1/prune").arg(guild_id));
+	url.addQuery("days", days);
 
-	payload["days"] = days;
-
-	http_service_.post(token_, endpoint, payload);
+	http_service_.post(token_, url);
 }
 
 void Client::deleteGuildIntegration(snowflake_t guild_id,
@@ -1320,14 +1348,12 @@ void Client::addGuildMemberRole(snowflake_t guild_id, snowflake_t user_id,
 void Client::createGuildBan(snowflake_t guild_id, snowflake_t user_id,
 		int delete_message_days, const QString& reason)
 {
-	QString endpoint = QString("/guilds/%1/bans/%2").arg(guild_id).arg(
-		user_id);
-	QJsonObject payload;
+	Url url(Discord::BaseUrl::API, QString("/guilds/%1/bans/%2").arg(
+		guild_id).arg(user_id));
+	url.addQuery("delete-message-days", delete_message_days);
+	url.addQuery("reason", reason);
 
-	payload["delete-message-days"] = delete_message_days;
-	payload["reason"] = reason;
-
-	http_service_.put(token_, endpoint, payload);
+	http_service_.put(token_, url);
 }
 
 void Client::createGuildRole(snowflake_t guild_id, const QString& name,

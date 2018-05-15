@@ -55,11 +55,14 @@ public:
 	void logout();
 
 	Promise<Channel>& getChannel(snowflake_t channel_id);
-	Promise<QList<Message>>& getChannelMessages(snowflake_t channel_id);
+	Promise<QList<Message>>& getChannelMessages(snowflake_t channel_id,
+		snowflake_t around = 0, snowflake_t before = 0, snowflake_t after = 0,
+		int limit = 50);
 	Promise<Message>& getChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id);
 	Promise<QList<Reaction>>& getReactions(snowflake_t channel_id,
-		snowflake_t message_id, const QString& emoji);
+		snowflake_t message_id, const QString& emoji, snowflake_t before = 0,
+		snowflake_t after = 0, int limit = 100);
 	Promise<QList<Invite>>& getChannelInvites(snowflake_t channel_id);
 	Promise<QList<Message>>& getPinnedMessages(snowflake_t channel_id);
 	Promise<QList<Emoji>>& listGuildEmojis(snowflake_t guild_id);
@@ -68,7 +71,8 @@ public:
 	Promise<QList<Channel>>& getGuildChannels(snowflake_t guild_id);
 	Promise<GuildMember>& getGuildMember(snowflake_t guild_id,
 		snowflake_t user_id);
-	Promise<QList<GuildMember>>& listGuildMembers(snowflake_t guild_id);
+	Promise<QList<GuildMember>>& listGuildMembers(snowflake_t guild_id,
+		int limit = 1, snowflake_t after = 0);
 	Promise<QList<Ban>>& getGuildBans(snowflake_t guild_id);
 	Promise<QList<Role>>& getGuildRoles(snowflake_t guild_id);
 	Promise<int>& getGuildPruneCount(snowflake_t guild_id, int days);
@@ -79,7 +83,8 @@ public:
 	Promise<Invite>& getInvite(const QString& invite_code);
 	Promise<User>& getCurrentUser();
 	Promise<User>& getUser(snowflake_t user_id);
-	Promise<QList<Guild>>& getCurrentUserGuilds();
+	Promise<QList<Guild>>& getCurrentUserGuilds(snowflake_t before = 0,
+		snowflake_t after = 0, int limit = 100);
 	Promise<QList<Channel>>& getUserDms();
 	Promise<QList<Connection>>& getUserConnections();
 	Promise<QList<VoiceRegion>>& listVoiceRegions();
