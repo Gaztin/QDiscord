@@ -17,43 +17,53 @@ HttpService::HttpService(const QString& user_agent, QObject* parent)
 		&HttpService::onReply);
 }
 
-QNetworkReply* HttpService::get(const Token& token, const QString& endpoint)
-{
-	return sendRequest("https://discordapp.com/api", "GET", token, endpoint, QJsonObject());
-}
-
 QNetworkReply* HttpService::get(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("https://discordapp.com/api", "GET", token, endpoint, payload);
+	return sendRequest(Url(BaseUrl::API, endpoint), "GET", token, payload);
+}
+
+QNetworkReply* HttpService::get(const Token& token, const Url& url)
+{
+	return sendRequest(url, "GET", token);
 }
 
 QNetworkReply* HttpService::del(const Token& token, const QString& endpoint)
 {
-	return sendRequest("https://discordapp.com/api", "DELETE", token, endpoint, QJsonObject());
+	return sendRequest(Url(BaseUrl::API, endpoint), "DELETE", token);
 }
 
 QNetworkReply* HttpService::post(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("https://discordapp.com/api", "POST", token, endpoint, payload);
+	return sendRequest(Url(BaseUrl::API, endpoint), "POST", token, payload);
+}
+
+QNetworkReply* HttpService::post(const Token& token, const Url& url)
+{
+	return sendRequest(url, "POST", token);
 }
 
 QNetworkReply* HttpService::put(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("https://discordapp.com/api", "PUT", token, endpoint, payload);
+	return sendRequest(Url(BaseUrl::API, endpoint), "PUT", token, payload);
+}
+
+QNetworkReply* HttpService::put(const Token& token, const Url& url)
+{
+	return sendRequest(url, "PUT", token);
 }
 
 QNetworkReply* HttpService::patch(const Token& token, const QString& endpoint,
 		const QJsonObject& payload)
 {
-	return sendRequest("https://discordapp.com/api", "PATCH", token, endpoint, payload);
+	return sendRequest(Url(BaseUrl::API, endpoint), "PATCH", token, payload);
 }
 
 QNetworkReply* HttpService::getImage(const Token& token, const QString& endpoint)
 {
-	return sendRequest("https://cdn.discordapp.com/", "GET", token, endpoint, QJsonObject());
+	return sendRequest(Url(BaseUrl::API, endpoint), "GET", token);
 }
 
 void HttpService::onReply(QNetworkReply* reply)
@@ -68,11 +78,10 @@ void HttpService::onReply(QNetworkReply* reply)
 	reply->deleteLater();
 }
 
-QNetworkReply* HttpService::sendRequest(const QString& base_url,
-		const QByteArray& verb, const Token& token, const QString& endpoint,
-		const QJsonObject& payload)
+QNetworkReply* HttpService::sendRequest(const Url& url, const QByteArray& verb,
+		const Token& token, const QJsonObject& payload)
 {
-	QNetworkRequest request(base_url + endpoint);
+	QNetworkRequest request(url.url());
 	QByteArray data;
 
 	request.setRawHeader("Authorization", token.authorization());
