@@ -16,19 +16,25 @@ class Url
 public:
 	Url(BaseUrl base_url, QString endpoint);
 
-	Url& addQuery(const QString& query);
-
 	template<typename T>
 	Url& addQuery(const QString& key, const T& value)
 	{
-		return addQuery(QString("?%1=%2").arg(key).arg(value));
+		queries_.push_back({key, QString("%1").arg(value)});
+		return *this;
 	}
 
-	QUrl& url() { return url_; }
-	const QUrl& url() const { return url_; }
+	QUrl url() const;
 
 private:
-	QUrl url_;
+	struct Query
+	{
+		QString key;
+		QString value;
+	};
+
+	BaseUrl base_url_;
+	QString endpoint_;
+	QList<Query> queries_;
 };
 
 QDISCORD_NAMESPACE_END

@@ -3,27 +3,43 @@
 QDISCORD_NAMESPACE_BEGIN
 
 Url::Url(BaseUrl base_url, QString endpoint)
+	: base_url_(base_url)
+	, endpoint_(endpoint)
 {
 	// Fix endpoints without leading slash
-	if (endpoint.length() > 0 && endpoint[0] != '/')
-		endpoint.push_front('/');
+	if (endpoint_.length() > 0 && endpoint_[0] != '/')
+		endpoint_.push_front('/');
+}
 
-	switch (base_url)
+QUrl Url::url() const
+{
+	QUrl url;
+
+	// Set base URL
+	switch (base_url_)
 	{
 	case Discord::BaseUrl::API:
-		url_.setUrl("https://discordapp.com/api" + endpoint);
+		url.setUrl("https://discordapp.com/api" + endpoint_);
 		break;
 
 	case Discord::BaseUrl::IMAGE:
-		url_.setUrl("https://cdn.discordapp.com" + endpoint);
+		url.setUrl("https://cdn.discordapp.com" + endpoint_);
 		break;
 	}
-}
 
-Url& Url::addQuery(const QString& query)
-{
-	url_.setQuery(url_.query() + query);
-	return *this;
+	// Set queries
+	if (!queries_.isEmpty())
+	{
+		QString query('?' + queries_[0].key + '=' + queries_[0].value);
+		for (int i = 1; i < queries_.count(); ++i)
+		{
+			query.push_back('&' + queries_[i].key + '=' + queries_[i].value);
+		}
+
+		url.setQuery(query);
+	}
+
+	return url;
 }
 
 QDISCORD_NAMESPACE_END
