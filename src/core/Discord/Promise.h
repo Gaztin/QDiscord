@@ -3,6 +3,8 @@
 
 #include <QtCore/QObject>
 
+#include <functional>
+
 QDISCORD_NAMESPACE_BEGIN
 
 template<typename T>
