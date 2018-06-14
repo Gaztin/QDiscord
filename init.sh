@@ -148,3 +148,5 @@ elif [ "$os" == "osx" ]; then
 	$(curl -L -o "tmp/premake5.tar.gz" "https://github.com/premake/premake-core/releases/download/v$PREMAKE_VERSION/premake-$PREMAKE_VERSION-macosx.tar.gz")
 	$(tar -xvzf "tmp/premake5.tar.gz" -C "bin")
 fi
+
+git submodule update --init
