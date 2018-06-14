@@ -30,7 +30,7 @@ QUrl Url::url() const
 	// Set queries
 	if (!queries_.isEmpty())
 	{
-		QString query('?' + queries_[0].key + '=' + queries_[0].value);
+		QString query(queries_[0].key + '=' + queries_[0].value);
 		for (int i = 1; i < queries_.count(); ++i)
 		{
 			query.push_back('&' + queries_[i].key + '=' + queries_[i].value);
