@@ -3,6 +3,7 @@
 #include "Discord/Payload.h"
 #include "Discord/Token.h"
 
+#include <QtCore/QBuffer>
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QNetworkReply>
 
@@ -82,18 +83,26 @@ QNetworkReply* HttpService::sendRequest(const Url& url, const QByteArray& verb,
 		const Token& token, const QJsonObject& payload)
 {
 	QNetworkRequest request(url.url());
-	QByteArray data;
 
 	request.setRawHeader("Authorization", token.authorization());
 	request.setRawHeader("User-Agent", user_agent_.toUtf8());
 
-	if (!payload.empty())
+	if (payload.empty())
+	{
+		return network_access_manager_.sendCustomRequest(request, verb);
+	}
+	else
 	{
 		request.setRawHeader("Content-Type", "application/json");
-		data = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+		QBuffer* buf = new QBuffer;
+		buf->open(QBuffer::WriteOnly);
+		buf->write(QJsonDocument(payload).toJson(QJsonDocument::Compact));
+		buf->close();
+		buf->open(QBuffer::ReadOnly);
+		QNetworkReply* reply = network_access_manager_.sendCustomRequest(request, verb, buf);
+		connect(reply, &QNetworkReply::finished, [buf] { delete buf; });
+		return reply;
 	}
-
-	return network_access_manager_.sendCustomRequest(request, verb, data);
 }
 
 QDISCORD_NAMESPACE_END
