@@ -1,3 +1,4 @@
+
 #include "GatewaySocket.h"
 
 #include "Discord/Payload.h"
@@ -157,6 +158,9 @@ void GatewaySocket::onHeartbeatTimerTick()
 	}
 	else
 	{
+#idef QT_DEBUG
+		qDebug("Unanswered heartbeat. Reestablishing connection.");
+#endif
 		disconnectFromGateway(
 			QWebSocketProtocol::CloseCodeAbnormalDisconnection);
 		connectToGateway(last_gateway_, token_);
@@ -177,6 +181,9 @@ void GatewaySocket::handleIncomingPayload(const Payload& payload)
 		break;
 
 		case PayloadOpcode::RECONNECT:
+#ifdef QT_DEBUG
+			qDebug("Requested reconnect from server..");
+#endif
 			disconnectFromGateway();
 			connectToGateway(last_gateway_, token_);
 		break;
