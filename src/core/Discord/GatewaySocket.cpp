@@ -158,7 +158,7 @@ void GatewaySocket::onHeartbeatTimerTick()
 	}
 	else
 	{
-#idef QT_DEBUG
+#ifdef QT_DEBUG
 		qDebug("Unanswered heartbeat. Reestablishing connection.");
 #endif
 		disconnectFromGateway(
