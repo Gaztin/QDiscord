@@ -89,11 +89,17 @@ QNetworkReply* HttpService::sendRequest(const Url& url, const QByteArray& verb,
 
 	if (payload.empty())
 	{
+		request.setRawHeader("Content-Length", "0");
 		return network_access_manager_.sendCustomRequest(request, verb);
 	}
 	else
 	{
+		QJsonDocument doc(payload);
+		int docsize = 0;
+		doc.rawData(&docsize);
 		request.setRawHeader("Content-Type", "application/json");
+		request.setRawHeader("Content-Length", QString::number(docsize).toLocal8Bit());
+
 		QBuffer* buf = new QBuffer;
 		buf->open(QBuffer::WriteOnly);
 		buf->write(QJsonDocument(payload).toJson(QJsonDocument::Compact));
