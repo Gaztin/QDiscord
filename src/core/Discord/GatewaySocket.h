@@ -18,6 +18,7 @@ public:
 	void connectToGateway(const QUrl& gateway, const Token& token);
 	void disconnectFromGateway(QWebSocketProtocol::CloseCode close_code =
 		QWebSocketProtocol::CloseCodeNormal);
+	void reconnectToGateway();
 
 	void sendPayload(const Payload& payload);
 	void identify();

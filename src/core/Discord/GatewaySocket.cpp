@@ -43,6 +43,12 @@ void GatewaySocket::disconnectFromGateway(
 	close(close_code);
 }
 
+void GatewaySocket::reconnectToGateway()
+{
+	close(QWebSocketProtocol::CloseCodeNormal);
+	open(last_gateway_);
+}
+
 void GatewaySocket::sendPayload(const Payload& payload)
 {
 	QJsonObject json_object;

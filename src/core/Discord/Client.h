@@ -54,6 +54,9 @@ public:
 	void login(const Token& token);
 	void logout();
 
+	GatewaySocket& getGatewaySocket() { return gateway_socket_; }
+	const GatewaySocket& getGatewaySocket() const { return gateway_socket_; }
+
 	Promise<Channel>& getChannel(snowflake_t channel_id);
 	Promise<QList<Message>>& getChannelMessages(snowflake_t channel_id,
 		snowflake_t around = 0, snowflake_t before = 0, snowflake_t after = 0,
