@@ -5,6 +5,8 @@
 
 int main(int argc, char* argv[])
 {
+	qputenv("QT_QPA_PLATFORM_PLUGIN_PATH", ".");
+
 	QApplication app(argc, argv);
 	MainWindow window;
 
