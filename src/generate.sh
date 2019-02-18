@@ -13,7 +13,7 @@ fi
 
 # Make sure action is valid
 if [ "$action" == "" ]; then
-	action="vs2017"
+	action="vs2015"
 fi
 
 
