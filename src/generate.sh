@@ -18,4 +18,4 @@ fi
 
 
 # Generate project files
-../bin/premake5 "--file=premake/main.lua" "$action"
+../bin/premake5 "--file=premake/all.lua" "$action"
