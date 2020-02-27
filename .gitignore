@@ -1,16 +1,23 @@
-# Binaries
-bin/
-build/
-tmp/
-
-# Visual Studio
+.build-*/
+.codelite/
+.externalNativeBuild/
+.gradle/
+.idea/
 .vs/
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
+build/*/
 
-# Qt
-moc_*
-ui_*
-qrc_*
+*.gradle
+*.iml
+*.sln
+*.xcworkspace
+*.workspace
+
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+gradle.properties
+gradlew
+gradlew.bat
+local.properties
+Makefile
+premake5.exe
+premake5

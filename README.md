@@ -1,17 +1,21 @@
-# About
-QDiscord is an interface for the [Discord API](https://discordapp.com/developers/), written in C++ using the [Qt](https://www.qt.io/) toolkit for cross-platform compability.
+# 🪁 Project
+Lorem ipsum dolor sit amet.
 
-# Prerequisites
-1. Qt 5.x ([link](https://www.qt.io/download-qt-installer))
-2. OpenSSL 1.0.2x ([link](https://www.openssl.org/source/))
+# 🔧 Building
+This project uses [Premake](https://premake.github.io/). It's a project generator configured with Lua scripts.
 
-# Building
-1. Run the bash script `init.sh` and enter the location of any dependant libraries. This script will also fetch the [premake](https://premake.github.io/) executable we'll later use to generate our project files.<br>
-![](https://i.imgur.com/Jlg2qzD.png)<br>
-(If you're requested directories for system versions you don't wish to build for, you may leave the responses blank)
+The first thing you'll want to do is to run the `init.sh` script. This is a bash script that fetches/builds the premake executable that we'll use to generate our project files. If you are on Windows and don't have any way of running bash scripts, [simply download the latest executable from their website](https://premake.github.io/download.html) and put it in the root directory of the project.
 
-2. Change to the "src" directory and run the bash script `generate.sh`. This gives us the project files we can finally use to compile the library.<br>
-![](https://i.imgur.com/0odjNNJ.png)<br>
-(If you're on Windows and wish to use Visual Studio 2015 instead of 2017 (default), pass the argument "vs2015" to the generate script)
+To generate files for your favorite IDE or build system, simply run the premake executable like so:</br>
+`premake5.exe vs2019` (Windows)</br>
+`./premake5 codelite` (Unix)
 
-3. Build the project using the generated project files.
+[Click here for a list of generators.](https://github.com/premake/premake-core/wiki/Using-Premake)
+
+# 💉 Samples
+
+**Sample #1**</br>
+Lorem ipsum dolor sit amet.
+
+**Sample #2**</br>
+Lorem ipsum dolor sit amet.
