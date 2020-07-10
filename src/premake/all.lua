@@ -1,4 +1,8 @@
-require 'extensions/premake-qt/qt'
+if _ACTION == 'qmake' then
+	require 'extensions/premake-qmake/qmake'
+else
+	require 'extensions/premake-qt/qt'
+end
 
 QTDIR_X86 = io.readfile('../../tmp/.qtdir_x86')
 QTDIR_X64 = io.readfile('../../tmp/.qtdir_x64')

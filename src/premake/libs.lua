@@ -1,9 +1,19 @@
 project ('QDiscordCore')
-	premake.extensions.qt.enable()
+	if premake.extensions.qt then
+		premake.extensions.qt.enable()
+		qtgenerateddir ('../core/GeneratedFiles/')
+		qtprefix ('Qt5')
+		filter {'architecture:x86'}
+			qtpath (QTDIR_X86)
+		filter {'architecture:x86_64'}
+			qtpath (QTDIR_X64)
+		filter {}
+	end
+	targetname ('QDiscord')
+	targetdir ('../../lib/%{cfg.system}/%{cfg.architecture}/%{cfg.buildcfg}')
+	objdir ('../../bin/%{cfg.architecture}/obj/')
 	location ('../projects/')
 	kind ('StaticLib')
-	qtgenerateddir ('../core/GeneratedFiles/')
-	qtprefix ('Qt5')
 	files {
 		'../core/**.h',
 		'../core/**.cpp',
@@ -15,20 +25,14 @@ project ('QDiscordCore')
 		'../core/',
 	}
 
+	filter {'configurations:Debug'}
+		symbols ('On')
+		optimize ('Off')
 	filter {'configurations:Release'}
+		symbols ('Off')
 		optimize ('Full')
 		defines {
 			'QT_NO_DEBUG',
 		}
-
-	filter {'platforms:x86'}
-		objdir ('../../bin/x86/obj/')
-		qtpath (QTDIR_X86)
-		targetdir ('../../bin/x86/')
-
-	filter {'platforms:x86_64 or x64'}
-		objdir ('../../bin/x64/obj/')
-		qtpath (QTDIR_X64)
-		targetdir ('../../bin/x64/')
 
 	filter {}

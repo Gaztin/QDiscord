@@ -1,12 +1,21 @@
 local function demo(prettyname, dirname)
 	project (prettyname)
-	premake.extensions.qt.enable()
+	if premake.extensions.qt then
+		premake.extensions.qt.enable()
+		qtgenerateddir ('../demos/' .. dirname .. '/GeneratedFiles/')
+		qtprefix ('Qt5')
+		filter {'configurations:Debug'}
+			qtsuffix ('d')
+		filter {'architecture:x86'}
+			qtpath (QTDIR_X86)
+		filter {'architecture:x64'}
+			qtpath (QTDIR_X64)
+		filter {}
+	end
 	debugdir ('../../bin/%{cfg.platform}/')
 	kind ('ConsoleApp')
 	location ('../projects/demos/')
 	objdir ('../../bin/%{cfg.platform}/obj/')
-	qtgenerateddir ('../demos/' .. dirname .. '/GeneratedFiles/')
-	qtprefix ('Qt5')
 	targetdir ('../../bin/%{cfg.platform}/')
 
 	files {
@@ -33,20 +42,11 @@ local function demo(prettyname, dirname)
 		'widgets',
 	}
 
-	filter {'configurations:Debug'}
-		qtsuffix ('d')
-
 	filter {'configurations:Release'}
 		optimize ('Full')
 		defines {
 			'QT_NO_DEBUG',
 		}
-
-	filter {'platforms:x86'}
-		qtpath (QTDIR_X86)
-
-	filter {'platforms:x64'}
-		qtpath (QTDIR_X64)
 
 	filter {}
 end
