@@ -1,4 +1,3 @@
-require 'third_party/premake-android-studio'
 require 'premake/app'
 require 'premake/customizations'
 require 'premake/defaults'
@@ -12,9 +11,13 @@ workspace( settings.workspace_name )
 platforms( utils.get_platforms() )
 configurations { 'Debug', 'Release' }
 
-library 'MyLibrary'
-app 'MyApp'
+library 'QDiscord'
+
+if( _ARGS[ 'demos' ] ) then
+	app 'DemoBot01'
+	app 'DemoBotUser'
+	app 'DemoEmbeds'
+end
 
 -- Set last app as startup
 workspace( settings.workspace_name )
-startproject( apps[ #apps ] )
