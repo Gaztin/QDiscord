@@ -6,3 +6,8 @@ if _TARGET_OS == 'macosx' then
 		description = 'Target iOS'
 	}
 end
+
+newoption {
+	trigger     = 'demos',
+	description = 'Generate Demo Apps'
+}
