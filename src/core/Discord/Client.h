@@ -144,6 +144,8 @@ public:
 
 	void createMessage(snowflake_t channel_id, const QString& content);
 	void createMessage(snowflake_t channel_id, const Embed& embed);
+	void createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const QString & content);
+	void createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const Discord::Embed & embed);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
 	void createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,
@@ -159,8 +161,8 @@ public:
 		DefaultMessageNotificationLevel default_message_notification_level,
 		ExplicitContentFilterLevel explicit_content_filter_level,
 		const QList<Role>& roles, const QList<Channel>& channels);
-	void createGuildChannel(snowflake_t guild_id, const QString& name,
-		ChannelType type, int bitrate, int user_limit,
+	Promise<Channel>& createGuildChannel(snowflake_t guild_id, const QString& name, const QString& topic,
+		ChannelType type, int bitrate, int user_limit, int rate_limite_per_user, int position,
 		const QList<Overwrite>& permission_overwrites, snowflake_t parent_id,
 		bool nsfw);
 	void addGuildMember(snowflake_t guild_id, snowflake_t user_id,
@@ -234,7 +236,7 @@ signals:
 		const QList<snowflake_t>& roles, const User& user,
 		const QString& nick);
 	void onGuildRoleCreate(snowflake_t guild_id,
-		const QList<GuildMember>& members);
+		const Role & _t2);
 	void onGuildRoleUpdate(snowflake_t guild_id, const Role& role);
 	void onGuildRoleDelete(snowflake_t guild_id, snowflake_t role_id);
 	void onMessageCreate(const Message& message);

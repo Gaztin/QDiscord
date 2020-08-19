@@ -38,10 +38,13 @@ public:
 	snowflake_t ownerId() const { return owner_id_; }
 	snowflake_t applicationId() const { return application_id_; }
 	snowflake_t lastMessageId() const { return last_message_id_; }
+	snowflake_t parentId() const { return parent_id_; }
 	
 	int position() const { return position_; }
 	int bitrate() const { return bitrate_; }
 	int userLimit() const { return user_limit_; }
+	int rateLimitPerUser() const { return rate_limit_per_user_; }
+	bool nsfw() const { return nsfw_; }
 
 	operator QJsonObject() const;
 
@@ -60,10 +63,13 @@ private:
 	snowflake_t owner_id_;
 	snowflake_t application_id_;
 	snowflake_t last_message_id_;
+	snowflake_t parent_id_;
 	
 	int position_;
 	int bitrate_;
 	int user_limit_;
+	int rate_limit_per_user_;
+	bool nsfw_;
 };
 
 QDISCORD_NAMESPACE_END

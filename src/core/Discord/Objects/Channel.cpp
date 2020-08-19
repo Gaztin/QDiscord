@@ -15,9 +15,12 @@ Channel::Channel(const QJsonObject& data)
 	, owner_id_(data["owner_id"].toString().toULongLong())
 	, application_id_(data["application_id"].toString().toULongLong())
 	, last_message_id_(data["last_message_id"].toString().toULongLong())
+	, parent_id_(data["parent_id"].toString().toULongLong())
 	, position_(data["position"].toInt())
 	, bitrate_(data["bitrate"].toInt())
 	, user_limit_(data["user_limit"].toInt())
+	, rate_limit_per_user_(data["rate_limit_per_user"].toInt())
+	, nsfw_(data["nsfw"].toBool())
 {
 	QJsonArray permission_overwrites_array =
 		data["permission_overwrites"].toArray();

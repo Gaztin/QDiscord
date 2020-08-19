@@ -254,6 +254,13 @@ Embed::operator QJsonObject() const
 	data["author"] = QJsonObject(author_);
 	data["color"] = color_;
 
+	QJsonArray field_arr;
+	for (const auto &field : fields_) {
+		field_arr.append(QJsonObject(field));
+	}
+
+	data["fields"] = field_arr;
+
 	return data;
 }
 

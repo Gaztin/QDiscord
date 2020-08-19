@@ -9,6 +9,14 @@ QDISCORD_NAMESPACE_BEGIN
 class Channel;
 class Token;
 
+enum class UploadImageSupportedExtension { PNG, JPG, GIF };
+
+struct UploadAttachment {
+	UploadImageSupportedExtension type;
+	QString name;
+	QByteArray file;
+};
+
 class HttpService : public QObject
 {
 public:
@@ -28,6 +36,7 @@ public:
 		const QJsonObject& payload);
 
 	QNetworkReply* getImage(const Token& token, const QString& endpoint);
+	QNetworkReply* postMultipart(const Token& token, const QString& endpoint, const UploadAttachment &attachment, const QJsonObject &payload);
 
 private slots:
 	void onReply(QNetworkReply* reply);
