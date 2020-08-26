@@ -42,7 +42,11 @@ local function demo(prettyname, dirname)
 		'widgets',
 	}
 
+	filter {'configurations:Debug'}
+		symbols ('On')
+		optimize ('Off')
 	filter {'configurations:Release'}
+		symbols ('Off')
 		optimize ('Full')
 		defines {
 			'QT_NO_DEBUG',
