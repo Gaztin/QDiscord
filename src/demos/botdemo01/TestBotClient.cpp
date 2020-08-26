@@ -162,6 +162,25 @@ void TestBotClient::handleMessage(const Discord::Message& message)
 			}
 		}
 	}
+	else if (message.content() == "!embed")
+	{
+		QList<Discord::EmbedField> fields;
+		for (int i = 0; i < 9; ++i)
+		{
+			Discord::EmbedField field;
+			field.setDisplayInline(true);
+			field.setName(QString("Name %1").arg(i));
+			field.setValue(QString("Value %1").arg(i));
+			fields.append(field);
+		}
+
+		Discord::Embed embed;
+		embed.setTitle("Title");
+		embed.setDescription("Description");
+		embed.setFields(fields);
+
+		createMessage(message.channelId(), embed);
+	}
 
 #ifdef QT_DEBUG
 	qDebug("[%s]: %s", qPrintable(message.author().username()),

@@ -178,7 +178,7 @@ EmbedField::EmbedField(const QString& name, const QString& value,
 EmbedField::EmbedField(const QJsonObject& data)
 	: name_(data["name"].toString())
 	, value_(data["value"].toString())
-	, display_inline_(data["display_inline"].toBool())
+	, display_inline_(data["inline"].toBool())
 {
 }
 
@@ -187,7 +187,7 @@ EmbedField::operator QJsonObject() const
 	QJsonObject data;
 	data["name"] = name_;
 	data["value"] = value_;
-	data["display_inline"] = display_inline_;
+	data["inline"] = display_inline_;
 
 	return data;
 }
@@ -240,6 +240,12 @@ Embed::Embed(const QJsonObject& data)
 
 Embed::operator QJsonObject() const
 {
+	QJsonArray fields_array;
+	for (const EmbedField& field : fields_)
+	{
+		fields_array.append(QJsonObject(field));
+	}
+
 	QJsonObject data;
 	data["timestamp"] = timestamp_.toString();
 	data["title"] = title_;
@@ -253,6 +259,7 @@ Embed::operator QJsonObject() const
 	data["provider"] = QJsonObject(provider_);
 	data["author"] = QJsonObject(author_);
 	data["color"] = color_;
+	data["fields"] = fields_array;
 
 	return data;
 }
