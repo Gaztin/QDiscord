@@ -27,6 +27,9 @@ function app( name )
 	}
 
 	premake.extensions.qt.enable()
+
+	filter 'system:windows'
+		debugenvs { "PATH=%PATH%;%{cfg.qtpath}/bin" }
 	
 	filter 'system:linux'
 		linkoptions { '-Wl,-rpath=\\$$ORIGIN' }
