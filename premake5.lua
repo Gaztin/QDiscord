@@ -13,10 +13,9 @@ configurations { 'Debug', 'Release' }
 
 library 'QDiscord'
 
-if( _ARGS[ 'demos' ] ) then
+if( _OPTIONS[ 'demos' ] ) then
 	app 'DemoBot01'
 	app 'DemoBotUser'
-	app 'DemoEmbeds'
 end
 
 -- Set last app as startup

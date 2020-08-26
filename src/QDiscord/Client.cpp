@@ -1,4 +1,4 @@
-#include "Client.h"
+#include "Discord/Client.h"
 
 #include "Discord/Objects/Ban.h"
 #include "Discord/Objects/Connection.h"

@@ -1,4 +1,4 @@
-#include "GuildEmbed.h"
+#include "Discord/Objects/GuildEmbed.h"
 
 #include <QtCore/QJsonObject>
 

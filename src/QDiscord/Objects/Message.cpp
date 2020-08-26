@@ -1,4 +1,4 @@
-#include "Message.h"
+#include "Discord/Objects/Message.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

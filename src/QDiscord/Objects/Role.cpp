@@ -1,4 +1,4 @@
-#include "Role.h"
+#include "Discord/Objects/Role.h"
 
 #include <QtCore/QJsonObject>
 

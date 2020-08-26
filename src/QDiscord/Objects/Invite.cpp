@@ -1,4 +1,4 @@
-#include "Invite.h"
+#include "Discord/Objects/Invite.h"
 
 #include <QtCore/QJsonObject>
 

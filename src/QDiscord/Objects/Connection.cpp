@@ -1,4 +1,4 @@
-#include "Connection.h"
+#include "Discord/Objects/Connection.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

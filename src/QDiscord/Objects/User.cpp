@@ -1,4 +1,4 @@
-#include "User.h"
+#include "Discord/Objects/User.h"
 
 #include <QtCore/QJsonObject>
 

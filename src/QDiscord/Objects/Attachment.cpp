@@ -1,4 +1,4 @@
-#include "Attachment.h"
+#include "Discord/Objects/Attachment.h"
 
 #include <QtCore/QJsonObject>
 

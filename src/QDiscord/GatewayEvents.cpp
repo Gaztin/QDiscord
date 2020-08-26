@@ -1,4 +1,4 @@
-#include "GatewayEvents.h"
+#include "Discord/GatewayEvents.h"
 
 #include <QtCore/QMap>
 #include <QtCore/QString>

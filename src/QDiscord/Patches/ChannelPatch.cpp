@@ -1,4 +1,4 @@
-#include "ChannelPatch.h"
+#include "Discord/Patches/ChannelPatch.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QList>

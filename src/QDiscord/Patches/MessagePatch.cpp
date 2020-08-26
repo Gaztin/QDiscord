@@ -1,4 +1,4 @@
-#include "MessagePatch.h"
+#include "Discord/Patches/MessagePatch.h"
 
 #include "Discord/Objects/Embed.h"
 

@@ -1,4 +1,4 @@
-#include "GuildEmbedPatch.h"
+#include "Discord/Patches/GuildEmbedPatch.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

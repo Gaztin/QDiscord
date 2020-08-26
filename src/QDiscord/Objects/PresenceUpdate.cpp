@@ -1,4 +1,4 @@
-#include "PresenceUpdate.h"
+#include "Discord/Objects/PresenceUpdate.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

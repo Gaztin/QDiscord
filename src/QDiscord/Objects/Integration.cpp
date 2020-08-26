@@ -1,4 +1,4 @@
-#include "Integration.h"
+#include "Discord/Objects/Integration.h"
 
 #include <QtCore/QJsonObject>
 

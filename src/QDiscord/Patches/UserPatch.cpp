@@ -1,4 +1,4 @@
-#include "UserPatch.h"
+#include "Discord/Patches/UserPatch.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

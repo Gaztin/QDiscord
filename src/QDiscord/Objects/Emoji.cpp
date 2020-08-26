@@ -1,4 +1,4 @@
-#include "Emoji.h"
+#include "Discord/Objects/Emoji.h"
 
 #include <QtCore/QJsonObject>
 

@@ -7,7 +7,7 @@
 #include <Discord/Promise.h>
 
 TestBotClient::TestBotClient(QObject* parent)
-	: Discord::Client("test-bot")
+	: Discord::Client("test-bot", parent)
 {
 	connect(this, &Client::onMessageCreate, this, &TestBotClient::handleMessage);
 }

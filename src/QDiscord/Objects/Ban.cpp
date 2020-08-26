@@ -1,4 +1,4 @@
-#include "Ban.h"
+#include "Discord/Objects/Ban.h"
 
 #include <QtCore/QJsonObject>
 

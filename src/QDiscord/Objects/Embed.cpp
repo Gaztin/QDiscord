@@ -1,4 +1,4 @@
-#include "Embed.h"
+#include "Discord/Objects/Embed.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

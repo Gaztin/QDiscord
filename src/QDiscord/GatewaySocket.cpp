@@ -1,5 +1,4 @@
-
-#include "GatewaySocket.h"
+#include "Discord/GatewaySocket.h"
 
 #include "Discord/Payload.h"
 
@@ -9,7 +8,7 @@
 QDISCORD_NAMESPACE_BEGIN
 
 GatewaySocket::GatewaySocket(QObject* parent)
-	: QWebSocket()
+	: QWebSocket(QString(), QWebSocketProtocol::VersionLatest, parent)
 	, heartbeat_timer_(this)
 	, last_gateway_()
 	, token_()

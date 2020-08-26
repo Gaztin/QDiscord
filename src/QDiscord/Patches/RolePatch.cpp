@@ -1,4 +1,4 @@
-#include "RolePatch.h"
+#include "Discord/Patches/RolePatch.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

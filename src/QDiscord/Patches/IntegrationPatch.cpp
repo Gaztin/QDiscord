@@ -1,4 +1,4 @@
-#include "IntegrationPatch.h"
+#include "Discord/Patches/IntegrationPatch.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

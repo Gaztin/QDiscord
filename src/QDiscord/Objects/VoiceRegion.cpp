@@ -1,4 +1,4 @@
-#include "VoiceRegion.h"
+#include "Discord/Objects/VoiceRegion.h"
 
 #include <QtCore/QJsonObject>
 

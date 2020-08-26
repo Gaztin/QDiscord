@@ -7,7 +7,7 @@
 #include <Discord/Promise.h>
 
 BotUserClient::BotUserClient(Ui_MainWindow& window_layout, QObject* parent)
-	: Discord::Client("botuser")
+	: Discord::Client("botuser", parent)
 	, window_layout_ref_(window_layout)
 {
 	connect(this, &Client::onMessageCreate, this, &BotUserClient::handleMessage);
@@ -50,8 +50,8 @@ void BotUserClient::handleMessage(const Discord::Message& message)
 	});
 }
 
-void BotUserClient::onConnected(const Discord::User& user,
-		const QList<Discord::Channel>& private_channels,
+void BotUserClient::onConnected(const Discord::User& /*user*/,
+		const QList<Discord::Channel>& /*private_channels*/,
 		const QList<Discord::Guild>& guilds)
 {
 	Q_FOREACH(const Discord::Guild& _g, guilds)

@@ -1,4 +1,4 @@
-#include "Webhook.h"
+#include "Discord/Objects/Webhook.h"
 
 #include <QtCore/QJsonObject>
 

@@ -1,4 +1,4 @@
-#include "EmojiPatch.h"
+#include "Discord/Patches/EmojiPatch.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QList>

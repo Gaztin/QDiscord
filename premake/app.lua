@@ -1,4 +1,5 @@
 
+require 'extensions/premake-qt/qt'
 require 'library'
 require 'settings'
 require 'third_party_library'
@@ -14,14 +15,19 @@ function app( name )
 	links( libraries )
 	links( third_party_libraries )
 	location 'build/%{_ACTION}'
+	qtmodules { 'core', 'gui', 'widgets', 'network', 'websockets' }
+	qtgenerateddir 'src/%{prj.name}/GeneratedFiles'
 	sysincludedirs { 'include' }
 	xcodebuildresources 'src/%{prj.name}/Assets'
 
 	files {
+		'src/%{prj.name}/Forms/**.ui',
 		'src/%{prj.name}/**.cpp',
 		'src/%{prj.name}/**.h',
 	}
 
+	premake.extensions.qt.enable()
+	
 	filter 'system:linux'
 		linkoptions { '-Wl,-rpath=\\$$ORIGIN' }
 

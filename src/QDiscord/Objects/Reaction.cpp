@@ -1,4 +1,4 @@
-#include "Reaction.h"
+#include "Discord/Objects/Reaction.h"
 
 #include <QtCore/QJsonObject>
 

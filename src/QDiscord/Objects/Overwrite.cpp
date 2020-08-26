@@ -1,4 +1,4 @@
-#include "Overwrite.h"
+#include "Discord/Objects/Overwrite.h"
 
 #include <QtCore/QJsonObject>
 

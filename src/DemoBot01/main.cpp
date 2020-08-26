@@ -14,3 +14,12 @@ int main(int argc, char* argv[])
 
 	return app.exec();
 }
+
+#if defined( Q_OS_WINDOWS )
+
+int WinMain(void*, void*, const char*, int)
+{
+	return main(__argc, __argv);
+}
+
+#endif // Q_OS_WINDOWS

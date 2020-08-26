@@ -1,4 +1,4 @@
-#include "Channel.h"
+#include "Discord/Objects/Channel.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

@@ -1,4 +1,4 @@
-#include "Url.h"
+#include "Discord/Url.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

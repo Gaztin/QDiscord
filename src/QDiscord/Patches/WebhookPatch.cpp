@@ -1,4 +1,4 @@
-#include "WebhookPatch.h"
+#include "Discord/Patches/WebhookPatch.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

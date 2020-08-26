@@ -1,4 +1,4 @@
-#include "Activity.h"
+#include "Discord/Objects/Activity.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

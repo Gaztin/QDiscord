@@ -1,4 +1,4 @@
-#include "Token.h"
+#include "Discord/Token.h"
 
 QDISCORD_NAMESPACE_BEGIN
 

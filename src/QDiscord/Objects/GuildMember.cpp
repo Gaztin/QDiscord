@@ -1,4 +1,4 @@
-#include "GuildMember.h"
+#include "Discord/Objects/GuildMember.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>

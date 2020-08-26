@@ -1,4 +1,4 @@
-#include "GuildMemberPatch.h"
+#include "Discord/Patches/GuildMemberPatch.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QList>

@@ -1,4 +1,6 @@
 
+require 'extensions/premake-qt/qt'
+
 libraries = { }
 
 function library( name )
@@ -8,11 +10,15 @@ function library( name )
 	kind 'StaticLib'
 	links( libraries )
 	location 'build/%{_ACTION}'
+	qtgenerateddir 'src/%{prj.name}/GeneratedFiles'
 
 	files {
+		'include/**.h',
 		'src/%{prj.name}/**.cpp',
 		'src/%{prj.name}/**.h',
 	}
+	
+	premake.extensions.qt.enable()
 
 	filter 'system:macosx or ios'
 		files { 'src/%{prj.name}/**.mm' }
