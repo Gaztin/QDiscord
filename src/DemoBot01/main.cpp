@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 	return app.exec();
 }
 
-#if defined( Q_OS_WINDOWS )
+#ifdef Q_OS_WINDOWS
 
 int WinMain(void*, void*, const char*, int)
 {
