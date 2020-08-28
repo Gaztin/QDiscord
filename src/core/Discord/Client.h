@@ -142,8 +142,8 @@ public:
 	void deleteWebhook(snowflake_t webhook_id);
 	void deleteWebhook(snowflake_t webhook_id, const QString& token);
 
-	void createMessage(snowflake_t channel_id, const QString& content);
-	void createMessage(snowflake_t channel_id, const Embed& embed);
+	Promise<Message>& createMessage(snowflake_t channel_id, const QString& content);
+	Promise<Message>& createMessage(snowflake_t channel_id, const Embed& embed);
 	void createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
 	void createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,

@@ -1170,17 +1170,32 @@ void Client::deleteWebhook(snowflake_t webhook_id, const QString& token)
 	http_service_.del(token_, endpoint);
 }
 
-void Client::createMessage(snowflake_t channel_id, const QString& content)
+Promise<Message>& Client::createMessage(snowflake_t channel_id, const QString& content)
 {
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
 	QJsonObject payload;
 
 	payload["content"] = content;
 
-	http_service_.post(token_, endpoint, payload);
+	QNetworkReply* reply = http_service_.post(token_, endpoint, payload);
+	Promise<Message>* promise = new Promise<Message>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject message_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Message message(message_object);
+		promise->resolve(message);
+	});
+
+	return (*promise);
 }
 
-void Client::createMessage(snowflake_t channel_id, const Embed& embed)
+Promise<Message>& Client::createMessage(snowflake_t channel_id, const Embed& embed)
 {
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
 	QJsonObject payload;
@@ -1188,7 +1203,22 @@ void Client::createMessage(snowflake_t channel_id, const Embed& embed)
 	payload["content"] = QString();
 	payload["embed"] = QJsonObject(embed);
 
-	http_service_.post(token_, endpoint, payload);
+	QNetworkReply* reply = http_service_.post(token_, endpoint, payload);
+	Promise<Message>* promise = new Promise<Message>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		QJsonObject message_object = QJsonDocument::fromJson(
+			reply->readAll()).object();
+		Message message(message_object);
+		promise->resolve(message);
+	});
+
+	return (*promise);
 }
 
 void Client::createReaction(snowflake_t channel_id, snowflake_t message_id,

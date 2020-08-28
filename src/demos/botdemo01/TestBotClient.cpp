@@ -17,10 +17,18 @@ void TestBotClient::handleMessage(const Discord::Message& message)
 	if (message.content() == "!test")
 	{
 		getChannel(message.channelId()).then([=](
-				const Discord::Channel& channel){
+				const Discord::Channel& channel) {
 			createMessage(channel.id(), QString("Channel name is '%1'").arg(
-				channel.name()));
-
+				channel.name())).then([=]
+					(const Discord::Message& message) {
+				listGuildEmojis(channel.guildId()).then([=]
+						(const QList<Discord::Emoji>& emojis) {
+					if (!emojis.empty()) {
+						createReaction(message.channelId(), message.id(), QString(":%1:%2")
+							.arg(emojis.first().name()).arg(emojis.first().id()));
+					}
+				});
+			});
 		}).otherwise([=](){
 			createMessage(message.channelId(), QString(
 				"Failed to get channel by ID: %1").arg(message.channelId()));
