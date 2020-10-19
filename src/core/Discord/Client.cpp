@@ -1656,9 +1656,9 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 				guilds.append(Guild(guild_value.toObject()));
 			}
 
-			emit onReady(user, private_channels, guilds);
-
 			session_id_ = data["session_id"].toString();
+
+			emit onReady(user, private_channels, guilds);
 		}
 		break;
 
