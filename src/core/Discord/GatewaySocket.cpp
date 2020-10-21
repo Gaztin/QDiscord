@@ -144,7 +144,7 @@ void GatewaySocket::onDisconnected()
 void GatewaySocket::onTextMessageReceived(const QString& message)
 {
 	QJsonDocument json_document = QJsonDocument::fromJson(
-		message.toLocal8Bit());
+		message.toUtf8());
 	QJsonObject json_object = json_document.object();
 	Payload payload;
 
