@@ -4,61 +4,49 @@
 #include <QtCore/QObject>
 
 #include <functional>
+#include <type_traits>
 
 QDISCORD_NAMESPACE_BEGIN
 
-template<typename T>
+template<typename... Ts>
 class Promise : public QObject
 {
 public:
-	using ResolvedFunctor = std::function<void(const T&)>;
+	using ResolvedFunctor = std::function<void(Ts...)>;
 	using RejectedFunctor = std::function<void()>;
 
-	Promise(QObject* parent = nullptr);
+	Promise(QObject* parent = nullptr)
+		: QObject(parent)
+	{
+	}
 
-	void resolve(const T& result);
-	void reject();
+	void resolve(Ts... values)
+	{
+		if (resolved_functor_)
+			resolved_functor_(values...);
+	}
 
-	Promise<T>& then(ResolvedFunctor&& resolved_functor);
-	Promise<T>& otherwise(RejectedFunctor&& rejected_functor);
+	void reject()
+	{
+		if (rejected_functor_)
+			rejected_functor_();
+	}
+
+	Promise& then(ResolvedFunctor resolved_functor)
+	{
+		resolved_functor_ = std::move(resolved_functor);
+		return *this;
+	}
+
+	Promise& otherwise(RejectedFunctor rejected_functor)
+	{
+		rejected_functor_ = std::move(rejected_functor);
+		return *this;
+	}
 
 private:
-	std::function<void(const T&)> resolved_functor_;
-	std::function<void()> rejected_functor_;
+	ResolvedFunctor resolved_functor_;
+	RejectedFunctor rejected_functor_;
 };
-
-template<typename T>
-Promise<T>::Promise(QObject* parent)
-	: QObject(parent)
-{
-}
-
-template<typename T>
-void Promise<T>::resolve(const T& result)
-{
-	if (resolved_functor_)
-		resolved_functor_(result);
-}
-
-template<typename T>
-void Promise<T>::reject()
-{
-	if (rejected_functor_)
-		rejected_functor_();
-}
-
-template<typename T>
-Promise<T>& Promise<T>::then(ResolvedFunctor&& resolved_functor)
-{
-	resolved_functor_ = resolved_functor;
-	return (*this);
-}
-
-template<typename T>
-Promise<T>& Promise<T>::otherwise(RejectedFunctor&& rejected_functor)
-{
-	rejected_functor_ = rejected_functor;
-	return (*this);
-}
 
 QDISCORD_NAMESPACE_END
