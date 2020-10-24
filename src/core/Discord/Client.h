@@ -113,104 +113,103 @@ public:
 	Promise<QPixmap>& getApplicationIconPixmap(const Activity& activity,
 		IconImageSupportedExtension extension, bool large);
 
-	void deleteChannel(snowflake_t channel_id);
-	void deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
+	Promise<Channel>& deleteChannel(snowflake_t channel_id);
+	Promise<>& deleteOwnReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
-	void deleteUserReaction(snowflake_t channel_id, snowflake_t message_id,
+	Promise<>& deleteUserReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji, snowflake_t user_id);
-	void deleteAllReactions(snowflake_t channel_id, snowflake_t message_id);
-	void deleteMessage(snowflake_t channel_id, snowflake_t message_id);
-	void bulkDeleteMessages(snowflake_t channel_id,
+	Promise<>& deleteAllReactions(snowflake_t channel_id, snowflake_t message_id);
+	Promise<>& deleteMessage(snowflake_t channel_id, snowflake_t message_id);
+	Promise<>& bulkDeleteMessages(snowflake_t channel_id,
 		const QList<snowflake_t>& message_ids);
-	void deleteChannelPermission(snowflake_t channel_id,
+	Promise<>& deleteChannelPermission(snowflake_t channel_id,
 		snowflake_t overwrite_id);
-	void deletePinnedChannelMessage(snowflake_t channel_id,
+	Promise<>& deletePinnedChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id);
-	void groupDmRemoveRecipient(snowflake_t channel_id, snowflake_t user_id);
-	void deleteGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id);
-	void deleteGuild(snowflake_t guild_id);
-	void removeGuildMemberRole(snowflake_t guild_id, snowflake_t user_id,
+	Promise<>& groupDmRemoveRecipient(snowflake_t channel_id, snowflake_t user_id);
+	Promise<>& deleteGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id);
+	Promise<>& deleteGuild(snowflake_t guild_id);
+	Promise<>& removeGuildMemberRole(snowflake_t guild_id, snowflake_t user_id,
 		snowflake_t role_id);
-	void removeGuildMember(snowflake_t guild_id, snowflake_t user_id);
-	void removeGuildBan(snowflake_t guild_id, snowflake_t user_id);
-	void deleteGuildRole(snowflake_t guild_id, snowflake_t role_id);
-	void beginGuildPrune(snowflake_t guild_id, int days);
-	void deleteGuildIntegration(snowflake_t guild_id,
+	Promise<>& removeGuildMember(snowflake_t guild_id, snowflake_t user_id);
+	Promise<>& removeGuildBan(snowflake_t guild_id, snowflake_t user_id);
+	Promise<>& deleteGuildRole(snowflake_t guild_id, snowflake_t role_id);
+	Promise<>& beginGuildPrune(snowflake_t guild_id, int days);
+	Promise<>& deleteGuildIntegration(snowflake_t guild_id,
 		snowflake_t integration_id);
-	void deleteInvite(const QString& invite_code);
-	void leaveGuild(snowflake_t guild_id);
-	void deleteWebhook(snowflake_t webhook_id);
-	void deleteWebhook(snowflake_t webhook_id, const QString& token);
+	Promise<Invite>& deleteInvite(const QString& invite_code);
+	Promise<>& leaveGuild(snowflake_t guild_id);
+	Promise<>& deleteWebhook(snowflake_t webhook_id);
+	Promise<>& deleteWebhook(snowflake_t webhook_id, const QString& token);
 
 	Promise<Message>& createMessage(snowflake_t channel_id, const QString& content);
 	Promise<Message>& createMessage(snowflake_t channel_id, const Embed& embed);
-	void createReaction(snowflake_t channel_id, snowflake_t message_id,
+	Promise<>& createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji);
-	void createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,
+	Promise<Invite>& createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,
 		bool temporary, bool unique);
-	void addPinnedChannelMessage(snowflake_t channel_id,
+	Promise<>& addPinnedChannelMessage(snowflake_t channel_id,
 		snowflake_t message_id);
-	void groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
+	Promise<>& groupDmAddRecipient(snowflake_t channel_id, snowflake_t user_id,
 		const QString& access_token, const QString& nick);
-	void createGuildEmoji(snowflake_t guild_id, const QString& name,
+	Promise<Emoji>& createGuildEmoji(snowflake_t guild_id, const QString& name,
 		const QByteArray& image, const QList<snowflake_t>& role_ids);
-	void createGuild(const QString& name, const QString& region,
+	Promise<Guild>& createGuild(const QString& name, const QString& region,
 		const QString& icon, VerificationLevel verification_level,
 		DefaultMessageNotificationLevel default_message_notification_level,
 		ExplicitContentFilterLevel explicit_content_filter_level,
 		const QList<Role>& roles, const QList<Channel>& channels);
-	void createGuildChannel(snowflake_t guild_id, const QString& name,
+	Promise<Channel>& createGuildChannel(snowflake_t guild_id, const QString& name,
 		ChannelType type, int bitrate, int user_limit,
 		const QList<Overwrite>& permission_overwrites, snowflake_t parent_id,
 		bool nsfw);
-	void addGuildMember(snowflake_t guild_id, snowflake_t user_id,
+	Promise<GuildMember*>& addGuildMember(snowflake_t guild_id, snowflake_t user_id,
 		const QString& access_token, const QString& nick,
 		const QList<snowflake_t>& roles, bool mute, bool deaf);
-	void addGuildMemberRole(snowflake_t guild_id, snowflake_t user_id,
+	Promise<>& addGuildMemberRole(snowflake_t guild_id, snowflake_t user_id,
 		snowflake_t role_id);
-	void createGuildBan(snowflake_t guild_id, snowflake_t user_id,
+	Promise<>& createGuildBan(snowflake_t guild_id, snowflake_t user_id,
 		int delete_message_days, const QString& reason);
-	void createGuildRole(snowflake_t guild_id, const QString& name,
+	Promise<Role>& createGuildRole(snowflake_t guild_id, const QString& name,
 		int permissions, int color, bool hoist, bool mentionable);
-	void createGuildIntegration(snowflake_t guild_id, const QString& type,
+	Promise<>& createGuildIntegration(snowflake_t guild_id, const QString& type,
 		snowflake_t id);
-	void createDm(snowflake_t recipient_id);
-	void createGroupDm(const QList<QString>& access_tokens,
+	Promise<Channel>& createDm(snowflake_t recipient_id);
+	Promise<Channel>& createGroupDm(const QList<QString>& access_tokens,
 		const QList<QPair<snowflake_t, QString>>& nicks);
-	void createWebhook(snowflake_t channel_id, const QString& name,
+	Promise<Webhook>& createWebhook(snowflake_t channel_id, const QString& name,
 		const QByteArray& avatar);
-
-	void modifyChannel(snowflake_t channel_id,
+	Promise<Channel>& modifyChannel(snowflake_t channel_id,
 		const ChannelPatch& channel_patch);
-	void editMessage(snowflake_t channel_id, snowflake_t message_id,
+	Promise<Message>& editMessage(snowflake_t channel_id, snowflake_t message_id,
 		const MessagePatch& message_patch);
-	void editChannelPermissions(snowflake_t channel_id,
+	Promise<>& editChannelPermissions(snowflake_t channel_id,
 		snowflake_t overwrite_id, int allow, int deny, const QString& type);
-	void modifyGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id,
+	Promise<Emoji>& modifyGuildEmoji(snowflake_t guild_id, snowflake_t emoji_id,
 		const EmojiPatch& emoji_patch);
-	void modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch);
-	void modifyGuildChannelPositions(snowflake_t guild_id,
+	Promise<Guild>& modifyGuild(snowflake_t guild_id, const GuildPatch& guild_patch);
+	Promise<>& modifyGuildChannelPositions(snowflake_t guild_id,
 		const QList<QPair<snowflake_t, int>>& channel_position_updates);
-	void modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
+	Promise<>& modifyGuildMember(snowflake_t guild_id, snowflake_t user_id,
 		const GuildMemberPatch& guild_member_patch);
-	void modifyCurrentUserNick(snowflake_t guild_id, const QString& nick);
-	void modifyGuildRolePositions(snowflake_t guild_id,
+	Promise<QString>& modifyCurrentUserNick(snowflake_t guild_id, const QString& nick);
+	Promise<QList<Role>>& modifyGuildRolePositions(snowflake_t guild_id,
 		const QList<QPair<snowflake_t, int>>& role_position_updates);
-	void modifyGuildRole(snowflake_t guild_id, snowflake_t role_id,
+	Promise<Role>& modifyGuildRole(snowflake_t guild_id, snowflake_t role_id,
 		const RolePatch& role_patch);
-	void modifyGuildIntegration(snowflake_t guild_id,
+	Promise<>& modifyGuildIntegration(snowflake_t guild_id,
 		snowflake_t integration_id, const IntegrationPatch& integration_patch);
-	void syncGuildIntegration(snowflake_t guild_id,
+	Promise<>& syncGuildIntegration(snowflake_t guild_id,
 		snowflake_t integration_id);
-	void modifyGuildEmbed(snowflake_t guild_id,
+	Promise<>& modifyGuildEmbed(snowflake_t guild_id,
 		const GuildEmbedPatch& guild_embed_patch);
-	void modifyCurrentUser(const UserPatch& user_patch);
-	void modifyWebhook(snowflake_t webhook_id,
+	Promise<User>& modifyCurrentUser(const UserPatch& user_patch);
+	Promise<Webhook>& modifyWebhook(snowflake_t webhook_id,
 		const WebhookPatch& webhook_patch);
-	void modifyWebhookWithToken(snowflake_t webhook_id, const QString& token,
+	Promise<Webhook>& modifyWebhookWithToken(snowflake_t webhook_id, const QString& token,
 		const WebhookPatch& webhook_patch);
 
-	void triggerTypingIndicator(snowflake_t channel_id);
+	Promise<>& triggerTypingIndicator(snowflake_t channel_id);
 
 signals:
 	void onReady(const User& user,
