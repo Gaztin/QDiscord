@@ -30,7 +30,7 @@ Message::Message(const QJsonObject& data)
 	QJsonArray mention_roles_array = data["mention_roles"].toArray();
 	for (QJsonValue mention_role_value : mention_roles_array)
 	{
-		mention_roles_.append(Role(mention_role_value.toObject()));
+		mention_roles_.append(mention_role_value.toString().toULongLong());
 	}
 	
 	QJsonArray attachments_array = data["attachments"].toArray();

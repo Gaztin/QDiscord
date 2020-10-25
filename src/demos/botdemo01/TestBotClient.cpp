@@ -189,6 +189,33 @@ void TestBotClient::handleMessage(const Discord::Message& message)
 
 		createMessage(message.channelId(), embed);
 	}
+	else if (message.content().startsWith("!roles "))
+	{
+		getChannel(message.channelId()).then(
+			[this, message](const Discord::Channel& channel)
+			{
+				getGuildRoles(channel.guildId()).then(
+					[this, message](const QList<Discord::Role>& guild_roles)
+					{
+						QStringList echo = { "Mentioned roles were:" };
+
+						for (snowflake_t mentioned_role_id : message.mentionRoles())
+						{
+							for (const Discord::Role& guild_role : guild_roles)
+							{
+								if (guild_role.id() == mentioned_role_id)
+								{
+									echo.append("<@&" + QString::number(mentioned_role_id) + ">");
+								}
+							}
+						}
+
+						createMessage(message.channelId(), echo.join(' '));
+					}
+				);
+			}
+		);
+	}
 
 #ifdef QT_DEBUG
 	qDebug("[%s]: %s", qPrintable(message.author().username()),
