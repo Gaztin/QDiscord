@@ -270,6 +270,10 @@ private:
 
 	GatewaySocket gateway_socket_;
 	HttpService http_service_;
+
+private:
+
+	void retry(QNetworkReply* reply, const QString& endpoint, const QByteArray& verb, const QJsonObject& payload, Promise<>* promise);
 };
 
 QDISCORD_NAMESPACE_END

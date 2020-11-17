@@ -1480,15 +1480,25 @@ Promise<>& Client::createReaction(snowflake_t channel_id, snowflake_t message_id
 		"/channels/%1/messages/%2/reactions/%3/@me").arg(channel_id).arg(
 			message_id).arg(emoji);
 	QNetworkReply* reply = http_service_.put(token_, endpoint, QJsonObject());
-	Promise<>* promise = new Promise<>(reply);
+	Promise<>* promise = new Promise<>();
 
 	connect(reply, &QNetworkReply::finished,
-		[reply, promise]
+		[this, reply, promise, endpoint]
 	{
-		if (reply->error() != QNetworkReply::NoError)
-			return promise->reject();
+		const int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		if (status_code == 429)
+		{
+			retry(reply, endpoint, "PUT", QJsonObject(), promise);
+		}
 		else
-			promise->resolve();
+		{
+			if (reply->error() != QNetworkReply::NoError)
+				promise->reject();
+			else
+				promise->resolve();
+
+			promise->deleteLater();
+		}
 	});
 
 	return (*promise);
@@ -2637,6 +2647,50 @@ void Client::onHttpGetGatewayBotReply()
 //	int shards = data["shards"].toInt();
 
 	gateway_socket_.connectToGateway(url, token_);
+}
+
+void Client::retry(QNetworkReply* reply, const QString& endpoint, const QByteArray& verb, const QJsonObject& payload, Promise<>* promise)
+{
+//	const int64_t when          = reply->rawHeader("X-RateLimit-Reset").toLongLong();
+//	const int64_t when_relative = when - QDateTime::currentSecsSinceEpoch();
+	const double  after         = reply->rawHeader("X-RateLimit-Reset-After").toDouble();
+	QJsonDocument json          = QJsonDocument::fromJson(reply->readAll());
+	QJsonObject   obj           = json.object();
+	const double  after2        = obj["retry_after"].toDouble();
+	const bool    global        = obj["global"].toBool();
+
+	qDebug("Limit: %f", after2);
+
+	QTimer* timer = new QTimer();
+	timer->connect(timer, &QTimer::timeout,
+		[this, timer, endpoint, verb, payload, promise](void)
+	{
+		QNetworkReply* reply = http_service_.sendRequest(Url(BaseUrl::API, endpoint), verb, token_, payload);
+
+		reply->connect(reply, &QNetworkReply::finished,
+			[this, reply, endpoint, verb, payload, promise](void)
+		{
+			int status_code = reply->attribute(QNetworkRequest::Attribute::HttpStatusCodeAttribute).toInt();
+			if (status_code == 429)
+			{
+				retry(reply, endpoint, verb, payload, promise);
+			}
+			else
+			{
+				if (reply->error() != QNetworkReply::NoError)
+					promise->reject();
+				else
+					promise->resolve();
+
+				promise->deleteLater();
+			}
+		});
+
+		timer->deleteLater();
+	});
+
+//	timer->start(static_cast<int>(after * 1000));
+	timer->start(static_cast<int>(after2));
 }
 
 QDISCORD_NAMESPACE_END

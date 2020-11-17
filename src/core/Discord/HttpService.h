@@ -29,13 +29,13 @@ public:
 
 	QNetworkReply* getImage(const Token& token, const QString& endpoint);
 
+	QNetworkReply* sendRequest(const Url& url, const QByteArray& verb,
+		const Token& token, const QJsonObject& payload = QJsonObject());
+
 private slots:
 	void onReply(QNetworkReply* reply);
 
 private:
-	QNetworkReply* sendRequest(const Url& url, const QByteArray& verb,
-		const Token& token, const QJsonObject& payload = QJsonObject());
-
 	QString user_agent_;
 	QNetworkAccessManager network_access_manager_;
 };

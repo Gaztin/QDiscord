@@ -67,18 +67,6 @@ QNetworkReply* HttpService::getImage(const Token& token, const QString& endpoint
 	return sendRequest(Url(BaseUrl::API, endpoint), "GET", token);
 }
 
-void HttpService::onReply(QNetworkReply* reply)
-{
-#ifdef QT_DEBUG
-	if (reply->error() != QNetworkReply::NoError)
-	{
-		qDebug("%s", qPrintable(reply->errorString()));
-	}
-#endif
-
-	reply->deleteLater();
-}
-
 QNetworkReply* HttpService::sendRequest(const Url& url, const QByteArray& verb,
 		const Token& token, const QJsonObject& payload)
 {
@@ -109,6 +97,25 @@ QNetworkReply* HttpService::sendRequest(const Url& url, const QByteArray& verb,
 		connect(reply, &QNetworkReply::finished, [buf] { delete buf; });
 		return reply;
 	}
+}
+
+void HttpService::onReply(QNetworkReply* reply)
+{
+#ifdef QT_DEBUG
+
+	if ( reply->error() != QNetworkReply::NoError)
+	{
+		// Don't log TOO_MANY_REQUESTS since it's handled
+		const int status_code = reply->attribute(QNetworkRequest::Attribute::HttpStatusCodeAttribute).toInt();
+		if (status_code != 429)
+		{
+			qDebug("%s", qPrintable(reply->errorString()));
+		}
+	}
+
+#endif
+
+	reply->deleteLater();
 }
 
 QDISCORD_NAMESPACE_END
