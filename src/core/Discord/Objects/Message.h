@@ -30,7 +30,7 @@ public:
 	explicit Message(const QJsonObject& data);
 
 	const QList<User>& mentions() const { return mentions_; }
-	const QList<Role>& mentionRoles() const { return mention_roles_; }
+	const QList<snowflake_t>& mentionRoles() const { return mention_roles_; }
 	const QList<Attachment>& attachments() const { return attachments_; }
 	const QList<Embed>& embeds() const { return embeds_; }
 	const QList<Reaction>& reactions() const { return reactions_; }
@@ -54,7 +54,7 @@ public:
 
 private:
 	QList<User> mentions_;
-	QList<Role> mention_roles_;
+	QList<snowflake_t> mention_roles_;
 	QList<Attachment> attachments_;
 	QList<Embed> embeds_;
 	QList<Reaction> reactions_;

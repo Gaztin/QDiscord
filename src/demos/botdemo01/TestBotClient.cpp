@@ -17,10 +17,18 @@ void TestBotClient::handleMessage(const Discord::Message& message)
 	if (message.content() == "!test")
 	{
 		getChannel(message.channelId()).then([=](
-				const Discord::Channel& channel){
+				const Discord::Channel& channel) {
 			createMessage(channel.id(), QString("Channel name is '%1'").arg(
-				channel.name()));
-
+				channel.name())).then([=]
+					(const Discord::Message& message) {
+				listGuildEmojis(channel.guildId()).then([=]
+						(const QList<Discord::Emoji>& emojis) {
+					if (!emojis.empty()) {
+						createReaction(message.channelId(), message.id(), QString(":%1:%2")
+							.arg(emojis.first().name()).arg(emojis.first().id()));
+					}
+				});
+			});
 		}).otherwise([=](){
 			createMessage(message.channelId(), QString(
 				"Failed to get channel by ID: %1").arg(message.channelId()));
@@ -161,6 +169,52 @@ void TestBotClient::handleMessage(const Discord::Message& message)
 				}
 			}
 		}
+	}
+	else if (message.content() == "!embed")
+	{
+		QList<Discord::EmbedField> fields;
+		for (int i = 0; i < 9; ++i)
+		{
+			Discord::EmbedField field;
+			field.setDisplayInline(true);
+			field.setName(QString("Name %1").arg(i));
+			field.setValue(QString("Value %1").arg(i));
+			fields.append(field);
+		}
+
+		Discord::Embed embed;
+		embed.setTitle("Title");
+		embed.setDescription("Description");
+		embed.setFields(fields);
+
+		createMessage(message.channelId(), embed);
+	}
+	else if (message.content().startsWith("!roles "))
+	{
+		getChannel(message.channelId()).then(
+			[this, message](const Discord::Channel& channel)
+			{
+				getGuildRoles(channel.guildId()).then(
+					[this, message](const QList<Discord::Role>& guild_roles)
+					{
+						QStringList echo = { "Mentioned roles were:" };
+
+						for (snowflake_t mentioned_role_id : message.mentionRoles())
+						{
+							for (const Discord::Role& guild_role : guild_roles)
+							{
+								if (guild_role.id() == mentioned_role_id)
+								{
+									echo.append("<@&" + QString::number(mentioned_role_id) + ">");
+								}
+							}
+						}
+
+						createMessage(message.channelId(), echo.join(' '));
+					}
+				);
+			}
+		);
 	}
 
 #ifdef QT_DEBUG
