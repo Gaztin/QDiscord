@@ -16,6 +16,7 @@ public:
 	const QString& discriminator() const { return discriminator_; }
 	const QString& avatar() const { return avatar_; }
 	const QString& email() const { return email_; }
+	const QString& locale() const { return locale_; }
 	
 	snowflake_t id() const { return id_; }
 	
@@ -30,6 +31,7 @@ private:
 	QString discriminator_;
 	QString avatar_;
 	QString email_;
+	QString locale_;
 	
 	snowflake_t id_;
 	

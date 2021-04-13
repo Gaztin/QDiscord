@@ -261,6 +261,13 @@ Embed::operator QJsonObject() const
 	data["color"] = color_;
 	data["fields"] = fields_array;
 
+	QJsonArray field_arr;
+	for (const auto &field : fields_) {
+		field_arr.append(QJsonObject(field));
+	}
+
+	data["fields"] = field_arr;
+
 	return data;
 }
 

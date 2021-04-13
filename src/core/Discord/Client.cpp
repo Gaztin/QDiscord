@@ -1473,6 +1473,52 @@ Promise<Message>& Client::createMessage(snowflake_t channel_id, const Embed& emb
 	return (*promise);
 }
 
+Promise<Message>& Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const QString & content)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QJsonObject payload;
+	payload["content"] = content;
+  
+	QNetworkReply* reply = http_service_.postMultipart(token_, endpoint, attachment, payload);
+  
+  Promise<Message>* promise = new Promise<Message>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		Message message(QJsonDocument::fromJson(reply->readAll()).object());
+		promise->resolve(message);
+	});
+
+	return (*promise);
+}
+
+Promise<Message>& Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const Discord::Embed & embed)
+{
+	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
+	QJsonObject payload;
+	payload["embed"] = QJsonObject(embed);
+	
+  QNetworkReply* reply = http_service_.postMultipart(token_, endpoint, attachment, payload);
+  
+  Promise<Message>* promise = new Promise<Message>(reply);
+
+	connect(reply, &QNetworkReply::finished,
+		[reply, promise]
+	{
+		if (reply->error() != QNetworkReply::NoError)
+			return promise->reject();
+
+		Message message(QJsonDocument::fromJson(reply->readAll()).object());
+		promise->resolve(message);
+	});
+
+	return (*promise);
+}
+
 Promise<>& Client::createReaction(snowflake_t channel_id, snowflake_t message_id,
 		const QString& emoji)
 {
@@ -1645,8 +1691,8 @@ Promise<Guild>& Client::createGuild(const QString& name, const QString& region,
 	return (*promise);
 }
 
-Promise<Channel>& Client::createGuildChannel(snowflake_t guild_id, const QString& name,
-		ChannelType type, int bitrate, int user_limit,
+Promise<Channel>& Client::createGuildChannel(snowflake_t guild_id, const QString& name, const QString& topic,
+		ChannelType type, int bitrate, int user_limit, int rate_limit_per_user, int position,
 		const QList<Overwrite>& permission_overwrites, snowflake_t parent_id,
 		bool nsfw)
 {
@@ -1660,9 +1706,16 @@ Promise<Channel>& Client::createGuildChannel(snowflake_t guild_id, const QString
 	}
 
 	payload["name"] = name;
+	payload["topic"] = topic;
 	payload["type"] = static_cast<int>(type);
-	payload["bitrate"] = bitrate;
-	payload["user_limit"] = user_limit;
+
+	if (type == Discord::ChannelType::GUILD_VOICE) {
+		payload["bitrate"] = bitrate;
+		payload["user_limit"] = user_limit;
+	}
+
+	payload["rate_limit_per_user"] = rate_limit_per_user;
+	payload["position"] = position;
 	payload["permission_overwrites"] = permission_overwrites_array;
 	payload["parent_id"] = QString::number(parent_id);
 	payload["nsfw"] = nsfw;
@@ -2456,13 +2509,9 @@ void Client::onGatewayEvent(const QString& name, const QJsonObject& data)
 		{
 			snowflake_t guild_id = data["guild_id"].toString().toULongLong();
 			QList<GuildMember> members;
-			QJsonArray members_array = data["members"].toArray();
-			for (QJsonValue member_value : members_array)
-			{
-				members.append(GuildMember(member_value.toObject()));
-			}
+			Role role(data["role"].toObject());
 
-			emit onGuildRoleCreate(guild_id, members);
+			emit onGuildRoleCreate(guild_id, role);
 		}
 		break;
 

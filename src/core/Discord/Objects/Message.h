@@ -45,6 +45,7 @@ public:
 	
 	snowflake_t id() const { return id_; }
 	snowflake_t channelId() const { return channel_id_; }
+	snowflake_t guildId() const { return guild_id_; }
 	snowflake_t nonce() const { return nonce_; }
 	
 	bool tts() const { return tts_; }
@@ -68,6 +69,7 @@ private:
 	
 	snowflake_t id_;
 	snowflake_t channel_id_;
+	snowflake_t guild_id_;
 	snowflake_t nonce_;
 	
 	bool tts_;
