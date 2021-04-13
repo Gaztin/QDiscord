@@ -146,8 +146,7 @@ public:
 	void createMessage(snowflake_t channel_id, const Embed& embed);
 	void createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const QString & content);
 	void createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const Discord::Embed & embed);
-	void createReaction(snowflake_t channel_id, snowflake_t message_id,
-		const QString& emoji);
+	void createReaction(snowflake_t channel_id, snowflake_t message_id, const QString& emoji);
 	void createChannelInvite(snowflake_t channel_id, int max_age, int max_uses,
 		bool temporary, bool unique);
 	void addPinnedChannelMessage(snowflake_t channel_id,

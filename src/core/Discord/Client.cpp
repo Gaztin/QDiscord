@@ -1191,22 +1191,23 @@ void Client::createMessage(snowflake_t channel_id, const Embed& embed)
 	http_service_.post(token_, endpoint, payload);
 }
 
-void Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const QString & content) {
+void Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const QString & content)
+{
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
 	QJsonObject payload;
 	payload["content"] = content;
 	http_service_.postMultipart(token_, endpoint, attachment, payload);
 }
 
-void Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const Discord::Embed & embed) {
+void Client::createImageMessage(snowflake_t channel_id, const UploadAttachment &attachment, const Discord::Embed & embed)
+{
 	QString endpoint = QString("/channels/%1/messages").arg(channel_id);
 	QJsonObject payload;
 	payload["embed"] = QJsonObject(embed);
 	http_service_.postMultipart(token_, endpoint, attachment, payload);
 }
 
-void Client::createReaction(snowflake_t channel_id, snowflake_t message_id,
-		const QString& emoji)
+void Client::createReaction(snowflake_t channel_id, snowflake_t message_id, const QString& emoji)
 {
 	QString endpoint = QString(
 		"/channels/%1/messages/%2/reactions/%3/@me").arg(channel_id).arg(

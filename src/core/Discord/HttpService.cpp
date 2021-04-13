@@ -6,9 +6,9 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QNetworkReply>
-#include <QtNetwork/qhttpmultipart.h>
 #include <QtGui/QPixmap>
-#include <QtCore/qfile.h>
+#include <QtNetwork/QHttpMultiPart>
+#include <QtCore/QFile>
 
 QDISCORD_NAMESPACE_BEGIN
 
